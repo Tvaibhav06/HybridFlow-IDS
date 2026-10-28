@@ -1,0 +1,33 @@
+# Datasets — too large for git
+backend/datasets/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Environment
+.env
+backend/.env
+
+# Logs
+*.log
+
+# Database
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+phase-2 implementation.md

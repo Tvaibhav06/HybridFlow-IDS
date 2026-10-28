@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: hybridflow
+      POSTGRES_PASSWORD: hybridflow
+      POSTGRES_DB: hybridflowids
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - hybridflow_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hybridflow -d hybridflowids"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        TORCH_EXTRA_INDEX_URL: ${TORCH_EXTRA_INDEX_URL:-}
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://hybridflow:hybridflow@db:5432/hybridflowids
+      - MODELS_DIR=models
+      - DATASETS_DIR=datasets
+    volumes:
+      - ./backend/models:/app/models
+      - ./backend/datasets:/app/datasets
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - hybridflow_net
+
+volumes:
+  pgdata:
+
+networks:
+  hybridflow_net:
+    driver: bridge
