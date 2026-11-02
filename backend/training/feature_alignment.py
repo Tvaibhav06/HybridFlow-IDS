@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 #
 # Design rules:
 #   1. Merge cross-dataset duplicates (same attack, different dataset names)
-#   2. Fix encoding artifacts  (WEB_ATTACK_â_* → WEB_*)
-#   3. Fix typos               (INFILTERATION → INFILTRATION)
+#   2. Fix encoding artifacts  (WEB_ATTACK_â_* -> WEB_*)
+#   3. Fix typos               (INFILTERATION -> INFILTRATION)
 #   4. Merge tiny sub-classes  (≤ ~50 samples) into their parent family
 #      so the model has enough examples to learn them
 # ---------------------------------------------------------------------------
@@ -117,7 +117,7 @@ LABEL_NORMALISATION: dict[str, str] = {
     "ANALYSIS":                     "PORTSCAN",        # UNSW ANALYSIS ≈ scanning
     "WORMS":                        "WORM",
 
-    # ── NSL-KDD rare / tiny classes → nearest parent ─────────────────────────
+    # ── NSL-KDD rare / tiny classes -> nearest parent ─────────────────────────
     # These have < 15 samples — merge rather than try to learn impossible classes
     "PERL":                         "SHELLCODE",       # remote exploit payload
     "PHF":                          "WEB_BRUTE_FORCE", # old CGI attack
@@ -208,13 +208,13 @@ def encode_labels(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int]]:
     1. Normalise raw labels to canonical families via LABEL_NORMALISATION.
     2. Encode canonical strings to integer class indices.
 
-    Returns (modified DataFrame, label→index mapping).
+    Returns (modified DataFrame, label->index mapping).
     """
     # Step 1: normalise
     before = df[LABEL_COLUMN].nunique()
     df[LABEL_COLUMN] = df[LABEL_COLUMN].apply(_normalise_label)
     after  = df[LABEL_COLUMN].nunique()
-    logger.info("Label normalisation: %d raw labels → %d canonical classes", before, after)
+    logger.info("Label normalisation: %d raw labels -> %d canonical classes", before, after)
 
     # Log the final distribution so it's visible in training logs
     dist = df[LABEL_COLUMN].value_counts()

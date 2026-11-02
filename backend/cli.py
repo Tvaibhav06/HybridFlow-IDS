@@ -18,6 +18,14 @@ import sys
 import time
 from pathlib import Path
 
+# Ensure UTF-8 output on Windows consoles
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 # Ensure backend directory is in sys.path
 BACKEND_DIR = Path(__file__).resolve().parent
 if str(BACKEND_DIR) not in sys.path:
@@ -408,6 +416,8 @@ def cmd_train(args):
     print_banner()
     mod = _load_backend()
     datasets_dir = mod["settings"].datasets_dir
+    if not datasets_dir.exists() and (BACKEND_DIR / "datasets").exists():
+        datasets_dir = BACKEND_DIR / "datasets"
 
     # Check for dataset files
     supported = ["cicids2017", "unsw_nb15", "nsl_kdd", "cicids2018"]

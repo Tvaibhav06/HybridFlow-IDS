@@ -23,8 +23,14 @@ from training.train_classifier  import train_classifier
 from training.train_autoencoder import train_autoencoder
 from training.evaluation        import evaluate_classifier, evaluate_autoencoder
 
+BACKEND_DIR = Path(__file__).resolve().parent.parent
 DATASETS_DIR = Path(os.getenv("DATASETS_DIR", "datasets"))
+if not DATASETS_DIR.exists() and (BACKEND_DIR / "datasets").exists():
+    DATASETS_DIR = BACKEND_DIR / "datasets"
+
 MODELS_DIR   = Path(os.getenv("MODELS_DIR",   "models"))
+if not MODELS_DIR.is_absolute():
+    MODELS_DIR = BACKEND_DIR / "models"
 EPOCHS       = int(os.getenv("EPOCHS",   "60"))
 BATCH_SIZE   = int(os.getenv("BATCH_SIZE","1024"))
 LR           = float(os.getenv("LEARNING_RATE", "0.0005"))
@@ -35,12 +41,20 @@ FOCAL_GAMMA  = float(os.getenv("FOCAL_LOSS_GAMMA", "1.5"))
 BENIGN_CAP   = int(os.getenv("BENIGN_CAP",        "500000"))
 MIN_CLASS    = int(os.getenv("MIN_CLASS_SAMPLES",  "200"))
 
+# Ensure UTF-8 output on Windows consoles
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
     handlers=[logging.StreamHandler(sys.stdout),
-              logging.FileHandler(MODELS_DIR / "training.log")],
+              logging.FileHandler(MODELS_DIR / "training.log", encoding="utf-8")],
 )
 logger = logging.getLogger("hybridflowids.pipeline")
 
@@ -66,7 +80,7 @@ def resample(X: np.ndarray, y: np.ndarray, label_map: dict,
 
     if len(benign_positions) > benign_cap:
         benign_positions = rng.choice(benign_positions, benign_cap, replace=False)
-        logger.info("BENIGN undersampled: %d → %d", benign_mask.sum(), benign_cap)
+        logger.info("BENIGN undersampled: %d -> %d", benign_mask.sum(), benign_cap)
 
     keep = np.concatenate([benign_positions, other_positions])
     X, y = X[keep], y[keep]
@@ -79,7 +93,7 @@ def resample(X: np.ndarray, y: np.ndarray, label_map: dict,
         cls_idx = np.where(y == cls)[0]
         if cls != benign_idx and cnt > ATTACK_CAP:
             cls_idx = rng.choice(cls_idx, ATTACK_CAP, replace=False)
-            logger.info("Class %d capped: %d → %d", cls, cnt, ATTACK_CAP)
+            logger.info("Class %d capped: %d -> %d", cls, cnt, ATTACK_CAP)
         X_capped.append(X[cls_idx])
         y_capped.append(y[cls_idx])
     X = np.concatenate(X_capped)
@@ -99,7 +113,7 @@ def resample(X: np.ndarray, y: np.ndarray, label_map: dict,
             noise   = rng.normal(0, 0.01, (need, X.shape[1])).astype(np.float32)
             X_extra.append(X[chosen] + noise)
             y_extra.append(np.full(need, cls, dtype=y.dtype))
-            logger.info("Class %d oversampled: %d → %d", cls, cnt, min_class)
+            logger.info("Class %d oversampled: %d -> %d", cls, cnt, min_class)
 
     if X_extra:
         X = np.concatenate([X] + X_extra)
@@ -136,7 +150,7 @@ def run(epochs: int | None = None, batch_size: int | None = None, benign_cap: in
 
     # Split BEFORE resampling so the test set stays realistic
     X_tr, X_te, y_tr, y_te = split_data(X, y, TEST_SPLIT, SEED)
-    logger.info("Raw split — train: %d  test: %d", len(X_tr), len(X_te))
+    logger.info("Raw split - train: %d  test: %d", len(X_tr), len(X_te))
 
     logger.info("=== STEP 4b: Resample training set ===")
     X_tr, y_tr = resample(X_tr, y_tr, label_map, b_cap, MIN_CLASS, SEED)

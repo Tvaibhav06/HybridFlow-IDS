@@ -14,8 +14,8 @@ def evaluate_classifier(model, X_test, y_test, label_map, batch_size=1024):
     model = model.to(device).eval()
 
     ld = DataLoader(
-        TensorDataset(torch.tensor(X_test, dtype=torch.float32)),
-        batch_size=batch_size, shuffle=False,
+        TensorDataset(torch.from_numpy(X_test)),
+        batch_size=batch_size, shuffle=False, num_workers=0, pin_memory=torch.cuda.is_available(),
     )
     preds = []
     with torch.no_grad():
@@ -45,13 +45,13 @@ def evaluate_autoencoder(model, X_benign, X_attack, threshold, batch_size=1024):
 
     def get_errors(X: np.ndarray) -> np.ndarray:
         ld = DataLoader(
-            TensorDataset(torch.tensor(X, dtype=torch.float32)),
-            batch_size=batch_size, shuffle=False,
+            TensorDataset(torch.from_numpy(X)),
+            batch_size=batch_size, shuffle=False, num_workers=0,
         )
         out = []
         with torch.no_grad():
             for (xb,) in ld:
-                # xb is already on CPU, model is on CPU — no device issue
+                # xb is already on CPU, model is on CPU - no device issue
                 out.append(model.reconstruction_error(xb).numpy())
         return np.concatenate(out)
 

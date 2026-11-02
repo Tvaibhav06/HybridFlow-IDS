@@ -1,6 +1,6 @@
 """
 IDS Classifier with Focal Loss.
-Architecture: Input → 512 → BN → 256 → BN → 128 → 64 → Output
+Architecture: Input -> 512 -> BN -> 256 -> BN -> 128 -> 64 -> Output
 """
 from __future__ import annotations
 import logging
@@ -67,17 +67,26 @@ def train_classifier(
 
     criterion = FocalLoss(gamma=focal_gamma, weight=None)
 
+    logger.info("Initializing optimizer and data pipelines on %s...", device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
+
+    # Subsample validation set during training epochs for faster iterations (full eval happens at Step 7)
+    if len(X_val) > 100000:
+        rng = np.random.default_rng(42)
+        val_idx = rng.choice(len(X_val), 100000, replace=False)
+        X_val_sub = X_val[val_idx]
+        y_val_sub = y_val[val_idx]
+    else:
+        X_val_sub = X_val
+        y_val_sub = y_val
 
     # DataLoaders defined BEFORE scheduler (scheduler needs len(train_ld))
     train_ld = DataLoader(
-        TensorDataset(torch.tensor(X_train, dtype=torch.float32),
-                      torch.tensor(y_train, dtype=torch.long)),
+        TensorDataset(torch.from_numpy(X_train), torch.from_numpy(y_train)),
         batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=torch.cuda.is_available(),
     )
     val_ld = DataLoader(
-        TensorDataset(torch.tensor(X_val, dtype=torch.float32),
-                      torch.tensor(y_val, dtype=torch.long)),
+        TensorDataset(torch.from_numpy(X_val_sub), torch.from_numpy(y_val_sub)),
         batch_size=batch_size, shuffle=False, num_workers=0, pin_memory=torch.cuda.is_available(),
     )
 
@@ -91,19 +100,24 @@ def train_classifier(
 
     save_path.parent.mkdir(parents=True, exist_ok=True)
     best_acc = -1.0
+    total_batches = len(train_ld)
 
     for epoch in range(1, epochs + 1):
         model.train()
         total_loss = 0.0
-        for xb, yb in train_ld:
+        for batch_idx, (xb, yb) in enumerate(train_ld, 1):
             xb, yb = xb.to(device), yb.to(device)
             optimizer.zero_grad()
             loss = criterion(model(xb), yb)
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
-            scheduler.step()  # ← inside batch loop for OneCycleLR
+            scheduler.step()  # inside batch loop for OneCycleLR
             total_loss += loss.item() * len(xb)
+
+            if batch_idx % 250 == 0 or batch_idx == total_batches:
+                logger.info("  Epoch %3d/%d [Batch %4d/%d]  batch_loss=%.4f  lr=%.6f",
+                            epoch, epochs, batch_idx, total_batches, loss.item(), scheduler.get_last_lr()[0])
 
         model.eval()
         correct = total = 0
@@ -114,7 +128,7 @@ def train_classifier(
                 total += len(yb)
 
         acc = correct / total
-        logger.info("Epoch %3d/%d  loss=%.4f  val_acc=%.4f  lr=%.6f",
+        logger.info("Epoch %3d/%d complete  avg_loss=%.4f  val_acc=%.4f  lr=%.6f",
                     epoch, epochs, total_loss / len(X_train), acc,
                     scheduler.get_last_lr()[0])
 

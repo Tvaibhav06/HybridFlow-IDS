@@ -21,14 +21,23 @@ class Settings(BaseSettings):
     metadata_filename: str = "metadata.json"
 
     @property
-    def classifier_path(self)  -> Path: return self.models_dir / self.classifier_filename
+    def effective_models_dir(self) -> Path:
+        if self.models_dir.exists():
+            return self.models_dir
+        backend_models = Path(__file__).resolve().parent.parent / "models"
+        if backend_models.exists():
+            return backend_models
+        return self.models_dir
+
     @property
-    def autoencoder_path(self) -> Path: return self.models_dir / self.autoencoder_filename
+    def classifier_path(self)  -> Path: return self.effective_models_dir / self.classifier_filename
     @property
-    def scaler_path(self)      -> Path: return self.models_dir / self.scaler_filename
+    def autoencoder_path(self) -> Path: return self.effective_models_dir / self.autoencoder_filename
     @property
-    def label_encoder_path(self) -> Path: return self.models_dir / self.label_encoder_filename
+    def scaler_path(self)      -> Path: return self.effective_models_dir / self.scaler_filename
     @property
-    def metadata_path(self)    -> Path: return self.models_dir / self.metadata_filename
+    def label_encoder_path(self) -> Path: return self.effective_models_dir / self.label_encoder_filename
+    @property
+    def metadata_path(self)    -> Path: return self.effective_models_dir / self.metadata_filename
 
 settings = Settings()

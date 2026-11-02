@@ -1,6 +1,6 @@
 """
 Autoencoder anomaly detector.
-Architecture: Encoder(in→64→32→16) / Decoder(16→32→64→in)
+Architecture: Encoder(in->64->32->16) / Decoder(16->32->64->in)
 Trained on benign-only traffic; high reconstruction error = anomaly.
 """
 from __future__ import annotations
@@ -31,7 +31,10 @@ class IDSAutoencoder(nn.Module):
         with torch.no_grad(): return ((x - self.forward(x))**2).mean(dim=1)
 
 def _errors(model, X, device, bs=512):
-    ld = DataLoader(TensorDataset(torch.tensor(X,dtype=torch.float32)), batch_size=bs, shuffle=False)
+    ld = DataLoader(
+        TensorDataset(torch.from_numpy(X)),
+        batch_size=bs, shuffle=False, num_workers=0, pin_memory=torch.cuda.is_available(),
+    )
     out = []
     with torch.no_grad():
         for (xb,) in ld: out.append(model.reconstruction_error(xb.to(device)).cpu().numpy())
@@ -45,18 +48,24 @@ def train_autoencoder(X_benign, save_path: Path, epochs=30, batch_size=512,
     model = IDSAutoencoder(X_benign.shape[1]).to(device)
     opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-5)
     sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=3, factor=0.5)
-    ld = DataLoader(TensorDataset(torch.tensor(X_benign,dtype=torch.float32)),
-                    batch_size=batch_size, shuffle=True)
+    ld = DataLoader(
+        TensorDataset(torch.from_numpy(X_benign)),
+        batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=torch.cuda.is_available(),
+    )
     save_path.parent.mkdir(parents=True, exist_ok=True)
     best = float("inf")
+    total_batches = len(ld)
     for ep in range(1, epochs+1):
         model.train(); loss_sum = 0
-        for (xb,) in ld:
+        for batch_idx, (xb,) in enumerate(ld, 1):
             xb = xb.to(device); opt.zero_grad()
             l = nn.MSELoss()(model(xb), xb); l.backward(); opt.step()
             loss_sum += l.item()*len(xb)
+            if batch_idx % 250 == 0 or batch_idx == total_batches:
+                logger.info("  AE Epoch %3d/%d [Batch %4d/%d]  loss=%.6f",
+                            ep, epochs, batch_idx, total_batches, l.item())
         avg = loss_sum/len(X_benign); sched.step(avg)
-        logger.info("AE epoch %3d/%d  loss=%.6f", ep, epochs, avg)
+        logger.info("AE Epoch %3d/%d complete  avg_loss=%.6f", ep, epochs, avg)
         if avg < best:
             best = avg; torch.save(model.state_dict(), save_path.with_suffix(".tmp.pt"))
     model.load_state_dict(torch.load(save_path.with_suffix(".tmp.pt"), map_location=device))
