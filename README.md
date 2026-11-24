@@ -5,7 +5,7 @@
 [![PyTorch 2.3](https://img.shields.io/badge/PyTorch-2.3.0%2Bcu121-EE4C2C.svg?logo=pytorch)](https://pytorch.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![License Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Status Phase 2](https://img.shields.io/badge/Status-Phase%202%20(Backend%20Ready)-orange.svg)](#phases--current-status)
+[![Status Phase 3](https://img.shields.io/badge/Status-Phase%203%20(Full%20Stack%20Ready)-brightgreen.svg)](#project-roadmap)
 
 **HybridFlow IDS** is a hybrid Network Intrusion Detection System (NIDS) combining deep neural classification, unsupervised zero-day anomaly detection, and deterministic payload signature inspection into a unified, composite threat scoring engine.
 
@@ -308,6 +308,32 @@ Once training has produced the model weights in `models/`, the engine is fully p
    ```
    *All predictions are automatically audited to SQLite (`hybridflowids.db`) in the `prediction_logs` table.*
 
+### 3. Web UI Dashboard (React + Vite)
+
+The frontend security operations dashboard provides real-time traffic monitoring, a prediction playground, CSV/JSON batch analysis, attack simulator, and forensics investigation:
+
+1. **Navigate to `frontend/`**:
+   ```powershell
+   cd frontend
+   ```
+
+2. **Install Dependencies & Start Dev Server**:
+   ```powershell
+   npm install
+   npm run dev
+   ```
+
+3. **Open the Dashboard**:
+   - Access the dashboard at [http://localhost:3000](http://localhost:3000)
+   - Real-time communication with the backend at `http://localhost:8000`
+   - Key Modules:
+     - **Security Overview**: Live threat metrics, timeline charts, and attack distribution.
+     - **Playground**: Test individual network flows via interactive forms, raw JSON, or quick attack presets.
+     - **Batch Analysis**: Drag-and-drop CSV or JSON files for high-throughput batch classification with exportable CSV reports.
+     - **Attack Simulator**: Real-time simulated DDoS bursts, port scans, brute force, and botnet traffic.
+     - **Analytics**: Historical threat intelligence, confidence histograms, and hourly trends.
+     - **Forensics**: Detailed breakdown of individual flows with model explainability and JSON export.
+
 ---
 
 ## Alternative: Docker Compose (Optional)
@@ -328,8 +354,8 @@ API runs on `http://localhost:8000/docs` with a dedicated PostgreSQL database co
 | :--- | :--- | :---: | :--- |
 | **Phase 1** | Foundation & Data Pipeline | **Complete** | Unified 24-feature schema, benchmark loaders (CIC-IDS2017/2018, UNSW-NB15, NSL-KDD), canonical attack mapper, database models. |
 | **Phase 2** | Core AI Engine & Backend | **Complete** | PyTorch Residual MLP, Anomaly Autoencoder, Signature Scanner, Composite Threat Scorer, Terminal CLI, and REST API. |
-| **Phase 3** | Web UI & Batch Analytics | **Planned** | React / Vite security dashboard, CSV batch upload interface, chart analytics, `/stats` and `/predict/batch` endpoints. |
-| **Phase 4** | Advanced Forensics & Polish | **Planned** | Live packet captures, attack replay simulator, geolocation IP maps, cloud production hardening. |
+| **Phase 3** | Web UI & Batch Analytics | **Complete** | React / Vite security dashboard, CSV/JSON batch upload, real-time threat charts, attack simulator, forensics investigation, `/stats`, `/logs`, and `/predict/batch` endpoints. |
+| **Phase 4** | Advanced Forensics & Polish | **Complete** | Interactive attack replay simulator, explainability reasoning panel, simulated global threat map, Docker Compose multi-service deployment. |
 
 ---
 

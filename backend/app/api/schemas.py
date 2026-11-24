@@ -56,9 +56,23 @@ class PredictionResponse(BaseModel):
     signature_rule: str | None
     model_version: str
 
+class BatchRequest(BaseModel):
+    records: list[TrafficFeatures] = Field(..., min_length=1, max_length=10_000)
+
+class BatchPredictionResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    total: int
+    results: list[PredictionResponse]
+
 class HealthResponse(BaseModel):
     status: str
     models_loaded: bool
     classifier_ready: bool
     autoencoder_ready: bool
     version: str
+
+class StatsResponse(BaseModel):
+    total_requests: int
+    attack_distribution: dict[str, int]
+    severity_counts: dict[str, int]
+    anomaly_rate: float
