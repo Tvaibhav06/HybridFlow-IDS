@@ -63,8 +63,9 @@ def test_predict_benign_and_ddos_samples(api_client: TestClient):
     assert r_ddos.status_code == 200
     d = r_ddos.json()
     assert d["predicted_attack"] in ("DDOS", "DOS")
+    assert d["is_anomaly"] is True
     assert d["confidence"] > 0.8
-    assert d["severity"] in ("medium", "high", "critical")
+    assert d["severity"] in ("high", "critical")
 
 
 def test_predict_signature_override_and_stats_reset(api_client: TestClient):
@@ -77,16 +78,18 @@ def test_predict_signature_override_and_stats_reset(api_client: TestClient):
     assert res.status_code == 200
     data = res.json()
     assert data["signature_matched"] is True
+    assert data["predicted_attack"] == "WEB_SQL_INJECTION"
     assert "SQL-001" in data["signature_rule"]
     assert data["threat_score"] >= 65.0
     assert data["severity"] in ("high", "critical")
 
     stats = api_client.get("/stats").json()
     assert stats["total_requests"] == 1
-    assert data["predicted_attack"] in stats["attack_distribution"]
+    assert stats["attack_distribution"].get("WEB_SQL_INJECTION") == 1
 
     logs = api_client.get("/logs?limit=10").json()
     assert len(logs) == 1
+    assert logs[0]["predicted_attack"] == "WEB_SQL_INJECTION"
     assert "SQL-001" in logs[0]["signature_rule"]
 
     reset = api_client.delete("/stats/reset")
@@ -124,3 +127,12 @@ def test_invalid_inputs_return_4xx(api_client: TestClient):
 
     r_bad_batch = api_client.post("/predict/batch", json={"bad_key": []})
     assert r_bad_batch.status_code == 400
+
+    r_empty_batch = api_client.post("/predict/batch", json={"records": []})
+    assert r_empty_batch.status_code == 422
+
+    r_neg_batch = api_client.post("/predict/batch", json={"records": [{"flow_duration": -10}]})
+    assert r_neg_batch.status_code == 422
+
+    r_neg_list = api_client.post("/predict/batch", json=[{"flow_duration": -10}])
+    assert r_neg_list.status_code == 422

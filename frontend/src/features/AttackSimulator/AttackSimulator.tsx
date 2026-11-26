@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation } from '@tanstack/react-query'
 import { Zap, Play, Square, RotateCcw, Activity } from 'lucide-react'
@@ -186,6 +186,15 @@ export default function AttackSimulator() {
       intervalRef.current = null
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+    }
+  }, [])
 
   const reset = () => {
     stopSimulation()

@@ -15,10 +15,11 @@ load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from training.dataset_loader    import load_all_datasets, UNIFIED_FEATURES
+from training.dataset_loader    import load_all_datasets, UNIFIED_FEATURES, LABEL_COLUMN
 from training.feature_alignment import align_features, encode_labels, compute_class_weights
-from training.preprocessing     import (preprocess, split_data, get_benign_mask,
+from training.preprocessing     import (split_data, get_benign_mask,
                                          save_scaler, save_label_encoder)
+from sklearn.preprocessing       import StandardScaler
 from training.train_classifier  import train_classifier
 from training.train_autoencoder import train_autoencoder
 from training.evaluation        import evaluate_classifier, evaluate_autoencoder
@@ -144,12 +145,16 @@ def run(epochs: int | None = None, batch_size: int | None = None, benign_cap: in
     save_label_encoder(label_map, MODELS_DIR / "label_encoder.json")
     logger.info("Classes: %d", num_classes)
 
-    logger.info("=== STEP 4: Preprocess (scale) ===")
-    X, y, scaler = preprocess(df)
-    save_scaler(scaler, MODELS_DIR / "scaler.pkl")
+    logger.info("=== STEP 4: Split & Preprocess (scale on train only) ===")
+    X = df[UNIFIED_FEATURES].values.astype(np.float32)
+    y = df[LABEL_COLUMN].values.astype(np.int64)
 
-    # Split BEFORE resampling so the test set stays realistic
+    # Split BEFORE scaling & resampling so test statistics never leak into scaler
     X_tr, X_te, y_tr, y_te = split_data(X, y, TEST_SPLIT, SEED)
+    scaler = StandardScaler()
+    X_tr = scaler.fit_transform(X_tr).astype(np.float32)
+    X_te = scaler.transform(X_te).astype(np.float32)
+    save_scaler(scaler, MODELS_DIR / "scaler.pkl")
     logger.info("Raw split - train: %d  test: %d", len(X_tr), len(X_te))
 
     logger.info("=== STEP 4b: Resample training set ===")

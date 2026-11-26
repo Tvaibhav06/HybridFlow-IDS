@@ -61,8 +61,21 @@ export default function Dashboard() {
   })
 
   const recentPredictions = predictions.slice(0, 8)
-  const attackPredictions = predictions.filter((p: any) => p.predicted_attack !== 'BENIGN')
-  const criticalCount = predictions.filter((p: any) => p.severity === 'critical').length
+  const localAttackCount = predictions.filter((p: any) => p.predicted_attack !== 'BENIGN').length
+  const localCriticalCount = predictions.filter((p: any) => p.severity === 'critical').length
+
+  const totalAnalyzed = stats?.total_requests ?? predictions.length
+  const attackPredictionsCount = stats
+    ? Object.entries(stats.attack_distribution || {})
+        .filter(([k]) => k !== 'BENIGN')
+        .reduce((sum, [, count]) => sum + (count as number), 0)
+    : localAttackCount
+  const criticalCount = stats
+    ? (stats.severity_counts?.critical ?? 0)
+    : localCriticalCount
+  const attackRate = totalAnalyzed > 0
+    ? ((attackPredictionsCount / totalAnalyzed) * 100).toFixed(1)
+    : '0.0'
 
   const attackDistData = Object.entries(stats?.attack_distribution || {})
     .map(([name, value]) => ({
@@ -102,17 +115,15 @@ export default function Dashboard() {
         <StatCard
           icon={Eye}
           label="Total Analyzed"
-          value={(stats?.total_requests ?? 0).toLocaleString()}
+          value={totalAnalyzed.toLocaleString()}
           sub="All time"
           color="#355670"
         />
         <StatCard
           icon={AlertTriangle}
           label="Threats Detected"
-          value={attackPredictions.length.toLocaleString()}
-          sub={`${predictions.length > 0
-            ? ((attackPredictions.length / predictions.length) * 100).toFixed(1)
-            : 0}% attack rate`}
+          value={attackPredictionsCount.toLocaleString()}
+          sub={`${attackRate}% attack rate`}
           color="#99362E"
         />
         <StatCard

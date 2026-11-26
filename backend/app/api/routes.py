@@ -2,6 +2,7 @@
 from __future__ import annotations
 import csv, io, logging
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, status
+from pydantic import ValidationError
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.api.schemas import (
@@ -48,6 +49,17 @@ def predict(
 ):
     return svc.predict_one(features, db=db, client_ip=get_client_ip(request))
 
+def _parse_batch_json(body):
+    try:
+        if isinstance(body, list):
+            return BatchRequest(records=body).records
+        if isinstance(body, dict) and "records" in body:
+            return BatchRequest(**body).records
+    except ValidationError as e:
+        raise HTTPException(422, detail=e.errors())
+    raise HTTPException(400, "JSON payload must be an array or contain a 'records' key")
+
+
 @router.post("/predict/batch", response_model=BatchPredictionResponse, tags=["inference"])
 async def predict_batch(
     request: Request,
@@ -55,30 +67,25 @@ async def predict_batch(
     svc: PredictionService = Depends(get_service),
 ):
     ct = request.headers.get("content-type", "")
-    if "application/json" in ct:
-        body = await request.json()
-        if isinstance(body, list):
-            records = [TrafficFeatures(**item) for item in body]
-        elif isinstance(body, dict) and "records" in body:
-            records = BatchRequest(**body).records
-        else:
-            raise HTTPException(400, "JSON payload must be an array or contain a 'records' key")
-    elif "multipart/form-data" in ct:
+    if "multipart/form-data" in ct:
         form = await request.form()
         file = form.get("file")
         if not file:
             raise HTTPException(400, "'file' field missing")
         text = (await file.read()).decode("utf-8", "replace")
         records = _parse_csv(text)
+    elif "application/json" in ct:
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(400, "Invalid JSON payload")
+        records = _parse_batch_json(body)
     else:
         try:
             body = await request.json()
-            if isinstance(body, list):
-                records = [TrafficFeatures(**item) for item in body]
-            else:
-                records = BatchRequest(**body).records
         except Exception:
             raise HTTPException(415, "Use application/json or multipart CSV upload")
+        records = _parse_batch_json(body)
 
     results = svc.predict_batch(records, db=db, client_ip=get_client_ip(request))
     return BatchPredictionResponse(total=len(results), results=results)

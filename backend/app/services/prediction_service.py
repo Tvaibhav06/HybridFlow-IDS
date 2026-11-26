@@ -36,7 +36,7 @@ class PredictionService:
         label, conf, _ = run_classifier(vec, self.bundle)
         anom, is_anom = run_anomaly_detector(vec, self.bundle)
         sig = self.sig_engine.scan_fields(features.payload_fields())
-        if sig.matched and label == "BENIGN":
+        if sig.matched:
             label = SIGNATURE_CATEGORY_MAP.get(sig.category, sig.category.upper())
         score, sev = compute_threat_score(
             conf,
