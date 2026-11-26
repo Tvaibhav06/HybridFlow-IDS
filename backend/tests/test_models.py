@@ -36,6 +36,14 @@ class TestThreatScoring:
         s2,_ = compute_threat_score(0.5,0.5,True)
         assert s2 > s1
 
+    def test_benign_high_confidence_is_low_score(self):
+        score,sev = compute_threat_score(0.99,0.1,False,predicted_attack="BENIGN")
+        assert score < 31; assert sev == "low"
+
+    def test_signature_severity_floor(self):
+        score,sev = compute_threat_score(0.95,0.0,True,predicted_attack="WEB_SQL_INJECTION",signature_severity="high")
+        assert score >= 65.0; assert sev in ("high","critical")
+
 class TestSignatureEngine:
     @pytest.fixture(autouse=True)
     def eng(self): self.e = SignatureEngine()

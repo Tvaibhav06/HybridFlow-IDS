@@ -51,21 +51,23 @@ export default function Layout() {
     }, 300)
   }
 
+  const currentNav = NAV_ITEMS.find(n => location.pathname.startsWith(n.path))
+
   return (
-    <div className="flex h-screen bg-bg-base overflow-hidden">
+    <div className="flex h-screen bg-bg-base overflow-hidden text-text-primary">
       {/* Sidebar */}
       <motion.aside
         animate={{ width: sidebarCollapsed ? 64 : 220 }}
         transition={{ duration: 0.2, ease: 'easeInOut' }}
-        className="flex flex-col border-r border-bg-border bg-bg-surface z-20 flex-shrink-0"
+        className="flex flex-col border-r border-border bg-bg-surface z-20 flex-shrink-0"
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-4 py-5 border-b border-bg-border min-h-[64px]">
-          <div className="relative flex-shrink-0">
-            <Shield className="w-7 h-7 text-accent-cyan" />
+        <div className="flex items-center gap-3 px-4 border-b border-border-strong h-16 flex-shrink-0">
+          <div className="relative flex-shrink-0 flex items-center justify-center w-7 h-7 border border-border-strong bg-bg-base rounded-[2px]">
+            <Shield className="w-4 h-4 text-text-primary" />
             <div className={clsx(
-              "absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border border-bg-surface",
-              isOnline ? "bg-accent-green animate-pulse-cyan" : "bg-accent-red"
+              "absolute -top-1 -right-1 w-1.5 h-1.5 border border-bg-surface",
+              isOnline ? "bg-semantic-normal" : "bg-semantic-crit"
             )} />
           </div>
           <AnimatePresence>
@@ -77,8 +79,8 @@ export default function Layout() {
                 transition={{ duration: 0.15 }}
                 className="overflow-hidden"
               >
-                <div className="font-display font-bold text-text-primary text-base leading-tight whitespace-nowrap">
-                  HYBRID<span className="text-accent-cyan">FLOW</span>
+                <div className="font-serif font-semibold text-text-primary text-base leading-tight whitespace-nowrap tracking-tight">
+                  HybridFlow
                 </div>
                 <div className="text-[10px] font-mono text-text-muted uppercase tracking-widest whitespace-nowrap">
                   {isOnline ? 'Systems nominal' : 'Offline mode'}
@@ -90,6 +92,11 @@ export default function Layout() {
 
         {/* Nav items */}
         <nav className="flex-1 py-4 space-y-1 px-2">
+          {!sidebarCollapsed && (
+            <div className="px-3 pb-2 font-mono text-[10px] text-text-muted uppercase tracking-widest">
+              Modules
+            </div>
+          )}
           {NAV_ITEMS.map(({ path, label, icon: Icon, desc }) => {
             const active = location.pathname.startsWith(path)
             return (
@@ -97,35 +104,35 @@ export default function Layout() {
                 key={path}
                 to={path}
                 className={clsx(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-150 group relative",
+                  "flex items-center gap-3 px-3 py-2 rounded-[2px] border transition-colors duration-150 group relative",
                   active
-                    ? "bg-accent-cyan bg-opacity-10 text-accent-cyan border border-accent-cyan border-opacity-20"
-                    : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated"
+                    ? "bg-bg-elevated text-text-primary border-border-strong font-medium"
+                    : "text-text-secondary border-transparent hover:text-text-primary hover:bg-bg-elevated"
                 )}
               >
-                <Icon className={clsx("w-4 h-4 flex-shrink-0", active && "text-accent-cyan")} />
+                <Icon className={clsx("w-4 h-4 flex-shrink-0", active ? "text-text-primary" : "text-text-muted group-hover:text-text-primary")} />
                 <AnimatePresence>
                   {!sidebarCollapsed && (
                     <motion.span
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="font-body text-sm font-medium whitespace-nowrap"
+                      className="font-mono text-xs uppercase tracking-wider whitespace-nowrap"
                     >
                       {label}
                     </motion.span>
                   )}
                 </AnimatePresence>
                 {sidebarCollapsed && (
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-bg-elevated border border-bg-border
-                    rounded text-xs font-mono text-text-primary whitespace-nowrap opacity-0
+                  <div className="absolute left-full ml-2 px-2.5 py-1.5 bg-bg-surface border border-border-strong
+                    rounded-[2px] text-xs font-mono text-text-primary whitespace-nowrap opacity-0
                     group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                    {label}
-                    <div className="text-text-muted">{desc}</div>
+                    <div className="uppercase tracking-wider font-medium">{label}</div>
+                    <div className="text-[10px] text-text-muted">{desc}</div>
                   </div>
                 )}
                 {active && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-accent-cyan rounded-r" />
+                  <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-border-strong" />
                 )}
               </NavLink>
             )
@@ -133,11 +140,11 @@ export default function Layout() {
         </nav>
 
         {/* Collapse toggle */}
-        <div className="p-3 border-t border-bg-border">
+        <div className="p-3 border-t border-border">
           <button
             onClick={toggleSidebar}
-            className="w-full flex items-center justify-center p-2 rounded text-text-muted
-              hover:text-accent-cyan hover:bg-bg-elevated transition-all duration-150"
+            className="w-full flex items-center justify-center p-2 rounded-[2px] border border-transparent text-text-muted
+              hover:text-text-primary hover:bg-bg-elevated hover:border-border transition-colors duration-150"
             aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -148,21 +155,25 @@ export default function Layout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="h-16 border-b border-bg-border bg-bg-surface flex items-center justify-between px-6 flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-accent-cyan" />
-            <span className="font-mono text-xs text-text-secondary uppercase tracking-wider">
-              {NAV_ITEMS.find(n => location.pathname.startsWith(n.path))?.label || 'HybridFlow IDS'}
+        <header className="h-16 border-b border-border-strong bg-bg-base flex items-center justify-between px-6 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <Activity className="w-4 h-4 text-text-secondary" />
+            <span className="font-serif text-base font-semibold text-text-primary tracking-tight">
+              HybridFlow IDS
+            </span>
+            <span className="text-border font-mono text-xs">/</span>
+            <span className="font-mono text-xs text-text-secondary uppercase tracking-widest">
+              {currentNav?.label || 'Console'}
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {/* Reset button */}
             <button
               onClick={handleReset}
-              className="flex items-center gap-1.5 font-mono text-xs text-text-muted
-                hover:text-accent-red transition-colors border border-bg-border
-                hover:border-accent-red px-2.5 py-1.5 rounded"
+              className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-text-secondary
+                bg-bg-surface hover:text-semantic-crit hover:bg-semantic-crit-fill hover:border-semantic-crit
+                transition-colors border border-border px-2.5 py-1.5 rounded-[2px]"
               title="Reset prediction history and dashboard stats (models are unaffected)"
             >
               <Trash2 className="w-3 h-3" />
@@ -171,20 +182,20 @@ export default function Layout() {
 
             {/* Status indicator */}
             {health && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-2.5 py-1 border border-border bg-bg-surface rounded-[2px]">
                 <div className={clsx(
-                  "w-1.5 h-1.5 rounded-full",
-                  isOnline ? "bg-accent-green animate-pulse" : "bg-accent-red"
+                  "w-1.5 h-1.5",
+                  isOnline ? "bg-semantic-normal" : "bg-semantic-crit"
                 )} />
-                <span className="font-mono text-xs text-text-muted">
+                <span className="font-mono text-[11px] text-text-muted tabular-nums">
                   {isOnline ? `v${health.version}` : 'offline'}
                 </span>
               </div>
             )}
             {!isOnline && (
-              <div className="flex items-center gap-1.5 text-accent-amber">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 border border-semantic-warn-border bg-semantic-warn-fill text-semantic-warn rounded-[2px]">
                 <AlertCircle className="w-3.5 h-3.5" />
-                <span className="font-mono text-xs">Offline mode</span>
+                <span className="font-mono text-[11px] uppercase tracking-wider">Offline mode</span>
               </div>
             )}
           </div>

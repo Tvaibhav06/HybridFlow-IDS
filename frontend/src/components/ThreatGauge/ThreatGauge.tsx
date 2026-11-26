@@ -9,7 +9,7 @@ interface ThreatGaugeProps {
 }
 
 export default function ThreatGauge({ score, severity, size = 'md' }: ThreatGaugeProps) {
-  const color = SEVERITY_COLORS[severity as keyof typeof SEVERITY_COLORS] || '#00d4ff'
+  const color = SEVERITY_COLORS[severity as keyof typeof SEVERITY_COLORS] || '#355670'
   const clampedScore = Math.min(100, Math.max(0, score))
 
   const sizes = {
@@ -27,7 +27,7 @@ export default function ThreatGauge({ score, severity, size = 'md' }: ThreatGaug
   const rotation = -225
 
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="flex flex-col items-center gap-1.5">
       <svg
         width={viewBox}
         height={viewBox}
@@ -39,10 +39,10 @@ export default function ThreatGauge({ score, severity, size = 'md' }: ThreatGaug
           cy={cy}
           r={r}
           fill="none"
-          stroke="#1a2540"
+          stroke="#E2DDD0"
           strokeWidth={stroke}
           strokeDasharray={`${arcLength} ${circumference}`}
-          strokeLinecap="round"
+          strokeLinecap="butt"
           transform={`rotate(${rotation} ${cx} ${cy})`}
         />
         <motion.circle
@@ -54,12 +54,11 @@ export default function ThreatGauge({ score, severity, size = 'md' }: ThreatGaug
           strokeWidth={stroke}
           strokeDasharray={`${arcLength} ${circumference}`}
           strokeDashoffset={offset}
-          strokeLinecap="round"
+          strokeLinecap="butt"
           transform={`rotate(${rotation} ${cx} ${cy})`}
           initial={{ strokeDashoffset: arcLength }}
           animate={{ strokeDashoffset: offset }}
           transition={{ duration: 1, ease: 'easeOut' }}
-          style={{ filter: `drop-shadow(0 0 6px ${color})` }}
         />
         <text
           x={cx}
@@ -67,7 +66,7 @@ export default function ThreatGauge({ score, severity, size = 'md' }: ThreatGaug
           textAnchor="middle"
           fill={color}
           fontSize={fontSize}
-          fontFamily="JetBrains Mono, monospace"
+          fontFamily="IBM Plex Mono, JetBrains Mono, monospace"
           fontWeight="600"
         >
           {Math.round(clampedScore)}
@@ -76,9 +75,9 @@ export default function ThreatGauge({ score, severity, size = 'md' }: ThreatGaug
           x={cx}
           y={cy + fontSize + 6}
           textAnchor="middle"
-          fill="#475569"
+          fill="#7D786D"
           fontSize={fontSize * 0.4}
-          fontFamily="JetBrains Mono, monospace"
+          fontFamily="IBM Plex Mono, JetBrains Mono, monospace"
           letterSpacing="2"
         >
           THREAT
@@ -86,7 +85,7 @@ export default function ThreatGauge({ score, severity, size = 'md' }: ThreatGaug
       </svg>
       <span
         className={clsx(
-          'font-mono text-xs uppercase tracking-widest px-2 py-0.5 rounded',
+          'font-mono text-xs uppercase tracking-widest px-2 py-0.5 rounded-[2px]',
           severity === 'low' && 'badge-low',
           severity === 'medium' && 'badge-medium',
           severity === 'high' && 'badge-high',

@@ -100,12 +100,12 @@ function computeContributions(
 
 export default function ExplainabilityPanel({ prediction, features }: ExplainabilityPanelProps) {
   const contributions = computeContributions(features, prediction)
-  const attackColor = ATTACK_COLORS[prediction.predicted_attack] || '#00d4ff'
+  const attackColor = ATTACK_COLORS[prediction.predicted_attack] || '#355670'
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Brain className="w-4 h-4 text-accent-purple" />
+      <div className="flex items-center gap-2 pb-2 border-b border-border">
+        <Brain className="w-4 h-4 text-semantic-neutral" />
         <span className="font-mono text-xs text-text-secondary uppercase tracking-widest">
           Model Reasoning
         </span>
@@ -124,29 +124,28 @@ export default function ExplainabilityPanel({ prediction, features }: Explainabi
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.08 }}
-              className="space-y-1"
+              className="space-y-1.5"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   {c.direction === 'positive'
-                    ? <TrendingUp className="w-3 h-3 text-accent-red" />
-                    : <TrendingDown className="w-3 h-3 text-accent-green" />
+                    ? <TrendingUp className="w-3 h-3 text-semantic-crit" />
+                    : <TrendingDown className="w-3 h-3 text-semantic-normal" />
                   }
-                  <span className="font-mono text-xs text-text-secondary">{c.name}</span>
+                  <span className="font-mono text-xs text-text-primary font-medium">{c.name}</span>
                 </div>
-                <span className="font-mono text-xs" style={{ color: attackColor }}>
+                <span className="font-mono text-xs font-semibold tabular-nums" style={{ color: attackColor }}>
                   {(c.contribution * 100).toFixed(0)}%
                 </span>
               </div>
-              <div className="h-1.5 bg-bg-base rounded-full overflow-hidden">
+              <div className="h-1.5 bg-bg-elevated border border-border overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${c.contribution * 100}%` }}
                   transition={{ duration: 0.6, delay: i * 0.08, ease: 'easeOut' }}
-                  className="h-full rounded-full"
+                  className="h-full"
                   style={{
-                    backgroundColor: c.direction === 'positive' ? attackColor : '#00ff9f',
-                    boxShadow: `0 0 6px ${c.direction === 'positive' ? attackColor : '#00ff9f'}60`,
+                    backgroundColor: c.direction === 'positive' ? attackColor : '#355E3B',
                   }}
                 />
               </div>

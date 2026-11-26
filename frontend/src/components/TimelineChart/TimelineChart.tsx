@@ -18,12 +18,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
     <div className="panel-elevated px-3 py-2 text-xs font-mono space-y-1">
-      <div className="text-text-muted">{label}</div>
+      <div className="text-text-muted border-b border-border pb-1 mb-1">{label}</div>
       {payload.map((p: any) => (
         <div key={p.name} className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
+          <div className="w-1.5 h-1.5 flex-shrink-0" style={{ backgroundColor: p.color }} />
           <span className="text-text-secondary">{p.name}:</span>
-          <span className="text-text-primary font-semibold">{p.value}</span>
+          <span className="text-text-primary font-semibold tabular-nums">{p.value}</span>
         </div>
       ))}
     </div>
@@ -34,25 +34,15 @@ export default function TimelineChart({ data, height = 200 }: TimelineChartProps
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-        <defs>
-          <linearGradient id="gradBenign" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#00ff9f" stopOpacity={0.2} />
-            <stop offset="95%" stopColor="#00ff9f" stopOpacity={0} />
-          </linearGradient>
-          <linearGradient id="gradAttack" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#ff3b5c" stopOpacity={0.2} />
-            <stop offset="95%" stopColor="#ff3b5c" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#1a2540" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E2DDD0" vertical={false} />
         <XAxis
           dataKey="time"
-          tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}
+          tick={{ fill: '#7D786D', fontSize: 10, fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace' }}
           tickLine={false}
-          axisLine={false}
+          axisLine={{ stroke: '#D6D1C4' }}
         />
         <YAxis
-          tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}
+          tick={{ fill: '#7D786D', fontSize: 10, fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace' }}
           tickLine={false}
           axisLine={false}
         />
@@ -60,18 +50,20 @@ export default function TimelineChart({ data, height = 200 }: TimelineChartProps
         <Area
           type="monotone"
           dataKey="benign"
-          stroke="#00ff9f"
+          stroke="#355E3B"
           strokeWidth={1.5}
-          fill="url(#gradBenign)"
+          fill="#355E3B"
+          fillOpacity={0.12}
           dot={false}
           name="Benign"
         />
         <Area
           type="monotone"
           dataKey="attack"
-          stroke="#ff3b5c"
+          stroke="#99362E"
           strokeWidth={1.5}
-          fill="url(#gradAttack)"
+          fill="#99362E"
+          fillOpacity={0.12}
           dot={false}
           name="Attack"
         />

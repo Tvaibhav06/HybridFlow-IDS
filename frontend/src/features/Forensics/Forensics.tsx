@@ -58,9 +58,9 @@ export default function Forensics() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pb-4 border-b border-border">
         <div>
-          <h1 className="font-display text-2xl font-bold text-text-primary">Forensics</h1>
+          <h1 className="font-serif text-2xl font-semibold text-text-primary tracking-tight">Forensics</h1>
           <p className="font-mono text-xs text-text-muted mt-1">
             Investigate prediction history and export forensic reports
           </p>
@@ -113,7 +113,7 @@ export default function Forensics() {
           </select>
         </div>
 
-        <span className="font-mono text-xs text-text-muted ml-auto">
+        <span className="font-mono text-xs text-text-muted ml-auto tabular-nums">
           {filtered.length} of {predictions.length} records
         </span>
       </div>
@@ -138,32 +138,32 @@ export default function Forensics() {
                 animate={{ opacity: 1 }}
                 onClick={() => selectPrediction(p)}
                 className={clsx(
-                  "panel p-4 cursor-pointer transition-all duration-150 hover:border-opacity-40",
-                  selectedPrediction?.id === p.id && "border-accent-cyan border-opacity-40 bg-accent-cyan bg-opacity-5"
+                  "panel p-4 cursor-pointer transition-colors duration-150 hover:bg-bg-elevated",
+                  selectedPrediction?.id === p.id && "border-border-strong bg-bg-elevated"
                 )}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: ATTACK_COLORS[p.predicted_attack] || '#475569' }}
+                    className="w-1.5 h-1.5 flex-shrink-0"
+                    style={{ backgroundColor: ATTACK_COLORS[p.predicted_attack] || '#4A473F' }}
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span
                         className="font-mono text-sm font-semibold"
-                        style={{ color: ATTACK_COLORS[p.predicted_attack] || '#94a3b8' }}
+                        style={{ color: ATTACK_COLORS[p.predicted_attack] || '#4A473F' }}
                       >
                         {p.predicted_attack}
                       </span>
-                      <span className="font-mono text-xs text-text-muted">
+                      <span className="font-mono text-xs text-text-muted tabular-nums">
                         {format(new Date(p.timestamp), 'HH:mm:ss')}
                       </span>
                     </div>
                     <div className="flex items-center gap-3 mt-1">
-                      <span className="font-mono text-xs text-text-muted">
+                      <span className="font-mono text-xs text-text-muted tabular-nums">
                         {(p.confidence * 100).toFixed(0)}% conf
                       </span>
-                      <span className="font-mono text-xs text-text-muted">
+                      <span className="font-mono text-xs text-text-muted tabular-nums">
                         score: {p.threat_score.toFixed(0)}
                       </span>
                       <span className={clsx(
@@ -194,10 +194,10 @@ export default function Forensics() {
                 className="space-y-4 max-h-[calc(100vh-280px)] overflow-auto pr-1"
               >
                 {/* Header */}
-                <div className="panel p-4 flex items-center justify-between">
+                <div className="panel-primary p-4 flex items-center justify-between">
                   <div>
-                    <div className="font-mono text-xs text-text-muted mb-1">Forensic Record</div>
-                    <div className="font-mono text-xs text-text-muted">{selectedPrediction.id}</div>
+                    <div className="label-text mb-1">Forensic Record</div>
+                    <div className="font-mono text-xs text-text-secondary tabular-nums">{selectedPrediction.id}</div>
                   </div>
                   <div className="flex gap-2">
                     <button
@@ -221,26 +221,26 @@ export default function Forensics() {
                   />
                   <div className="flex-1">
                     <div
-                      className="font-display text-2xl font-bold"
-                      style={{ color: ATTACK_COLORS[selectedPrediction.predicted_attack] || '#94a3b8' }}
+                      className="font-serif text-2xl font-semibold tracking-tight"
+                      style={{ color: ATTACK_COLORS[selectedPrediction.predicted_attack] || '#4A473F' }}
                     >
                       {selectedPrediction.predicted_attack}
                     </div>
-                    <div className="font-mono text-xs text-text-muted mt-1">
+                    <div className="font-mono text-xs text-text-muted mt-1 tabular-nums">
                       {format(new Date(selectedPrediction.timestamp), 'PPpp')}
                     </div>
-                    <div className="grid grid-cols-2 gap-3 mt-3">
+                    <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-border">
                       <div>
                         <div className="label-text mb-1">Confidence</div>
-                        <div className="font-mono text-sm text-text-primary">
+                        <div className="font-mono text-sm text-text-primary font-semibold tabular-nums">
                           {(selectedPrediction.confidence * 100).toFixed(2)}%
                         </div>
                       </div>
                       <div>
                         <div className="label-text mb-1">Anomaly Score</div>
                         <div className={clsx(
-                          "font-mono text-sm",
-                          selectedPrediction.is_anomaly ? "text-accent-red" : "text-accent-green"
+                          "font-mono text-sm font-semibold tabular-nums",
+                          selectedPrediction.is_anomaly ? "text-semantic-crit" : "text-semantic-normal"
                         )}>
                           {(selectedPrediction.anomaly_score * 100).toFixed(2)}%
                         </div>
@@ -252,14 +252,14 @@ export default function Forensics() {
                 {/* Features */}
                 {selectedPrediction.features && (
                   <div className="panel p-4">
-                    <div className="label-text mb-3">Raw Features</div>
+                    <div className="label-text mb-3 pb-2 border-b border-border">Raw Features</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 max-h-48 overflow-auto">
                       {Object.entries(selectedPrediction.features as Record<string, unknown>)
                         .filter(([, v]) => v !== null && v !== undefined)
                         .map(([k, v]) => (
-                          <div key={k} className="flex items-center justify-between">
+                          <div key={k} className="flex items-center justify-between border-b border-border/60 py-1">
                             <span className="font-mono text-xs text-text-muted truncate">{k}:</span>
-                            <span className="font-mono text-xs text-text-primary ml-2">
+                            <span className="font-mono text-xs text-text-primary ml-2 tabular-nums">
                               {typeof v === 'number' ? (v as number).toLocaleString() : String(v)}
                             </span>
                           </div>

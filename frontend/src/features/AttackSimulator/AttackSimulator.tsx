@@ -14,6 +14,8 @@ const ATTACK_TEMPLATES: Array<{
   label: string
   description: string
   color: string
+  fill: string
+  border: string
   icon: string
   features: TrafficFeatures
 }> = [
@@ -21,90 +23,100 @@ const ATTACK_TEMPLATES: Array<{
     type: 'ddos',
     label: 'DDoS Burst',
     description: 'Volumetric flood with massive packet rate',
-    color: '#ff3b5c',
-    icon: '💥',
+    color: '#99362E',
+    fill: '#F8ECEB',
+    border: '#DDB5B1',
+    icon: 'SIM-01',
     features: {
-      flow_duration: 0.001, flow_iat_mean: 0.00001, flow_iat_std: 0.000001,
-      packet_count: 100000, fwd_packets: 99000, bwd_packets: 1000, fwd_bwd_ratio: 99,
-      byte_count: 9900000, fwd_bytes: 9800000, bwd_bytes: 100000,
-      flow_bytes_per_sec: 999999999, flow_packets_per_sec: 999999999,
-      avg_packet_size: 99, fwd_packet_size_mean: 99, bwd_packet_size_mean: 100,
-      syn_flag_count: 99000, ack_flag_count: 0, rst_flag_count: 0,
-      fin_flag_count: 0, psh_flag_count: 0,
-      payload_length: 9800000, payload_entropy: 0.05,
-      fwd_header_length: 20, bwd_header_length: 20,
+      flow_duration: 1293792.0, flow_iat_mean: 143754.6667, flow_iat_std: 430865.8067,
+      packet_count: 10.0, fwd_packets: 3.0, bwd_packets: 7.0, fwd_bwd_ratio: 0.4286,
+      byte_count: 11633.0, fwd_bytes: 26.0, bwd_bytes: 11607.0,
+      flow_bytes_per_sec: 8991.3989, flow_packets_per_sec: 7.7292,
+      avg_packet_size: 1057.5454, fwd_packet_size_mean: 8.6667, bwd_packet_size_mean: 1658.1428,
+      syn_flag_count: 0.0, ack_flag_count: 0.0, rst_flag_count: 0.0,
+      fin_flag_count: 0.0, psh_flag_count: 1.0,
+      payload_length: 26.0, payload_entropy: 0.47,
+      fwd_header_length: 72.0, bwd_header_length: 152.0,
     },
   },
   {
     type: 'portscan',
     label: 'Port Scan',
     description: 'Systematic probing of network ports',
-    color: '#00d4ff',
-    icon: '🔍',
+    color: '#355670',
+    fill: '#EBF0F4',
+    border: '#B5C7D6',
+    icon: 'SIM-02',
     features: {
-      flow_duration: 0.0005, flow_iat_mean: 0.0002, flow_iat_std: 0.00005,
-      packet_count: 1, fwd_packets: 1, bwd_packets: 0, fwd_bwd_ratio: 999,
-      byte_count: 40, fwd_bytes: 40, bwd_bytes: 0,
-      flow_bytes_per_sec: 80000, flow_packets_per_sec: 2000,
-      avg_packet_size: 40, fwd_packet_size_mean: 40, bwd_packet_size_mean: 0,
-      syn_flag_count: 1, ack_flag_count: 0, rst_flag_count: 0,
-      fin_flag_count: 0, psh_flag_count: 0,
-      payload_length: 0, payload_entropy: 0,
-      fwd_header_length: 20, bwd_header_length: 0,
+      flow_duration: 671.0, flow_iat_mean: 335.5, flow_iat_std: 296.2777,
+      packet_count: 3.0, fwd_packets: 2.0, bwd_packets: 1.0, fwd_bwd_ratio: 2.0,
+      byte_count: 10.0, fwd_bytes: 8.0, bwd_bytes: 2.0,
+      flow_bytes_per_sec: 14903.1297, flow_packets_per_sec: 4470.9389,
+      avg_packet_size: 3.0, fwd_packet_size_mean: 4.0, bwd_packet_size_mean: 2.0,
+      syn_flag_count: 0.0, ack_flag_count: 0.0, rst_flag_count: 0.0,
+      fin_flag_count: 0.0, psh_flag_count: 1.0,
+      payload_length: 8.0, payload_entropy: 0.3,
+      fwd_header_length: 44.0, bwd_header_length: 24.0,
     },
   },
   {
     type: 'bruteforce',
     label: 'Brute Force',
     description: 'Repeated authentication attempts',
-    color: '#ffaa00',
-    icon: '🔑',
+    color: '#8F6522',
+    fill: '#F7F1E3',
+    border: '#D9C59E',
+    icon: 'SIM-03',
     features: {
-      flow_duration: 0.2, flow_iat_mean: 0.02, flow_iat_std: 0.005,
-      packet_count: 500, fwd_packets: 250, bwd_packets: 250, fwd_bwd_ratio: 1,
-      byte_count: 50000, fwd_bytes: 25000, bwd_bytes: 25000,
-      flow_bytes_per_sec: 250000, flow_packets_per_sec: 2500,
-      avg_packet_size: 100, fwd_packet_size_mean: 100, bwd_packet_size_mean: 100,
-      syn_flag_count: 250, ack_flag_count: 250, rst_flag_count: 100,
-      fin_flag_count: 0, psh_flag_count: 50,
-      payload_length: 25000, payload_entropy: 3.5,
-      fwd_header_length: 20, bwd_header_length: 20,
+      flow_duration: 3302859.0, flow_iat_mean: 300259.9091, flow_iat_std: 977989.9797,
+      packet_count: 12.0, fwd_packets: 6.0, bwd_packets: 6.0, fwd_bwd_ratio: 1.0,
+      byte_count: 112.0, fwd_bytes: 36.0, bwd_bytes: 76.0,
+      flow_bytes_per_sec: 33.91, flow_packets_per_sec: 3.6332,
+      avg_packet_size: 8.6154, fwd_packet_size_mean: 6.0, bwd_packet_size_mean: 12.6667,
+      syn_flag_count: 0.0, ack_flag_count: 0.0, rst_flag_count: 0.0,
+      fin_flag_count: 0.0, psh_flag_count: 1.0,
+      payload_length: 36.0, payload_entropy: 0.517,
+      fwd_header_length: 200.0, bwd_header_length: 200.0,
     },
   },
   {
     type: 'dos',
     label: 'DoS Attack',
     description: 'Single-source denial of service',
-    color: '#ff6b35',
-    icon: '⚡',
+    color: '#99362E',
+    fill: '#F8ECEB',
+    border: '#DDB5B1',
+    icon: 'SIM-04',
     features: {
-      flow_duration: 0.005, flow_iat_mean: 0.0005, flow_iat_std: 0.0001,
-      packet_count: 5000, fwd_packets: 4800, bwd_packets: 200, fwd_bwd_ratio: 24,
-      byte_count: 480000, fwd_bytes: 460000, bwd_bytes: 20000,
-      flow_bytes_per_sec: 96000000, flow_packets_per_sec: 1000000,
-      avg_packet_size: 96, fwd_packet_size_mean: 96, bwd_packet_size_mean: 100,
-      syn_flag_count: 4800, ack_flag_count: 0, rst_flag_count: 0,
-      fin_flag_count: 0, psh_flag_count: 0,
-      payload_length: 460000, payload_entropy: 0.1,
-      fwd_header_length: 20, bwd_header_length: 20,
+      flow_duration: 1878.0, flow_iat_mean: 234.75, flow_iat_std: 229.1299,
+      packet_count: 9.0, fwd_packets: 3.0, bwd_packets: 6.0, fwd_bwd_ratio: 0.5,
+      byte_count: 11977.0, fwd_bytes: 382.0, bwd_bytes: 11595.0,
+      flow_bytes_per_sec: 6377529.286, flow_packets_per_sec: 4792.3323,
+      avg_packet_size: 1197.7, fwd_packet_size_mean: 127.3333, bwd_packet_size_mean: 1932.5,
+      syn_flag_count: 0.0, ack_flag_count: 0.0, rst_flag_count: 0.0,
+      fin_flag_count: 0.0, psh_flag_count: 1.0,
+      payload_length: 382.0, payload_entropy: 0.8577,
+      fwd_header_length: 104.0, bwd_header_length: 200.0,
     },
   },
   {
     type: 'botnet',
     label: 'Botnet C2',
     description: 'Command and control communication',
-    color: '#a855f7',
-    icon: '🤖',
+    color: '#5C4F6E',
+    fill: '#F1EEF5',
+    border: '#C9C0D6',
+    icon: 'SIM-05',
     features: {
-      flow_duration: 300, flow_iat_mean: 60, flow_iat_std: 10,
-      packet_count: 30, fwd_packets: 15, bwd_packets: 15, fwd_bwd_ratio: 1,
-      byte_count: 3000, fwd_bytes: 1500, bwd_bytes: 1500,
-      flow_bytes_per_sec: 10, flow_packets_per_sec: 0.1,
-      avg_packet_size: 100, fwd_packet_size_mean: 100, bwd_packet_size_mean: 100,
-      syn_flag_count: 1, ack_flag_count: 15, rst_flag_count: 0,
-      fin_flag_count: 1, psh_flag_count: 5,
-      payload_length: 1500, payload_entropy: 7.8,
-      fwd_header_length: 20, bwd_header_length: 20,
+      flow_duration: 134812.0, flow_iat_mean: 22468.6667, flow_iat_std: 53230.9112,
+      packet_count: 7.0, fwd_packets: 4.0, bwd_packets: 3.0, fwd_bwd_ratio: 1.3333,
+      byte_count: 340.0, fwd_bytes: 206.0, bwd_bytes: 134.0,
+      flow_bytes_per_sec: 2522.0307, flow_packets_per_sec: 51.9242,
+      avg_packet_size: 42.5, fwd_packet_size_mean: 51.5, bwd_packet_size_mean: 44.6667,
+      syn_flag_count: 0.0, ack_flag_count: 0.0, rst_flag_count: 0.0,
+      fin_flag_count: 0.0, psh_flag_count: 1.0,
+      payload_length: 206.0, payload_entropy: 0.7687,
+      fwd_header_length: 92.0, bwd_header_length: 72.0,
     },
   },
 ]
@@ -188,8 +200,8 @@ export default function AttackSimulator() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">Attack Simulator</h1>
+      <div className="pb-4 border-b border-border">
+        <h1 className="font-serif text-2xl font-semibold text-text-primary tracking-tight">Attack Simulator</h1>
         <p className="font-mono text-xs text-text-muted mt-1">
           Simulate cyber attacks and observe real-time detection
         </p>
@@ -197,49 +209,64 @@ export default function AttackSimulator() {
 
       {/* Template selection */}
       <div className="grid grid-cols-5 gap-3">
-        {ATTACK_TEMPLATES.map((template) => (
-          <button
-            key={template.type}
-            onClick={() => { setSelectedTemplate(template); if (isRunning) stopSimulation() }}
-            className={`panel p-4 text-left transition-all duration-150 hover:border-opacity-60 ${
-              selectedTemplate.type === template.type ? 'border-opacity-60' : ''
-            }`}
-            style={{
-              borderColor: selectedTemplate.type === template.type ? template.color : undefined,
-              backgroundColor: selectedTemplate.type === template.type ? `${template.color}08` : undefined,
-            }}
-          >
-            <div className="text-2xl mb-2">{template.icon}</div>
-            <div className="font-mono text-xs font-semibold" style={{ color: template.color }}>
-              {template.label}
-            </div>
-            <div className="font-mono text-xs text-text-muted mt-1 leading-relaxed">
-              {template.description}
-            </div>
-          </button>
-        ))}
+        {ATTACK_TEMPLATES.map((template) => {
+          const isSelected = selectedTemplate.type === template.type
+          return (
+            <button
+              key={template.type}
+              onClick={() => { setSelectedTemplate(template); if (isRunning) stopSimulation() }}
+              className={`panel p-4 text-left transition-colors duration-150 ${
+                isSelected ? 'border-border-strong bg-bg-elevated' : 'hover:bg-bg-elevated'
+              }`}
+              style={{
+                borderLeftWidth: isSelected ? '3px' : undefined,
+                borderLeftColor: isSelected ? template.color : undefined,
+              }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-[10px] text-text-muted uppercase tracking-widest">
+                  {template.icon}
+                </span>
+                <div className="w-1.5 h-1.5" style={{ backgroundColor: template.color }} />
+              </div>
+              <div className="font-mono text-xs font-semibold" style={{ color: template.color }}>
+                {template.label}
+              </div>
+              <div className="font-mono text-xs text-text-muted mt-1 leading-relaxed">
+                {template.description}
+              </div>
+            </button>
+          )
+        })}
       </div>
 
       {/* Controls */}
       <div className="panel p-4 flex items-center gap-4">
         <div
-          className="flex items-center gap-2 px-3 py-2 rounded border"
-          style={{ borderColor: `${selectedTemplate.color}40`, color: selectedTemplate.color, backgroundColor: `${selectedTemplate.color}10` }}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-[2px] border"
+          style={{
+            borderColor: selectedTemplate.border,
+            color: selectedTemplate.color,
+            backgroundColor: selectedTemplate.fill,
+          }}
         >
-          <Zap className="w-4 h-4" />
-          <span className="font-mono text-sm font-semibold">{selectedTemplate.label}</span>
+          <Zap className="w-3.5 h-3.5" />
+          <span className="font-mono text-xs font-semibold uppercase tracking-wider">{selectedTemplate.label}</span>
         </div>
         <div className="flex-1" />
-        <button onClick={reset} className="btn-ghost p-2" disabled={isRunning}>
+        <button onClick={reset} className="btn-ghost p-2" disabled={isRunning} title="Reset simulation">
           <RotateCcw className="w-4 h-4" />
         </button>
         {isRunning ? (
-          <button onClick={stopSimulation} className="bg-accent-red text-white font-mono font-bold px-4 py-2 rounded text-sm hover:opacity-90 flex items-center gap-2">
-            <Square className="w-4 h-4" /> Stop
+          <button
+            onClick={stopSimulation}
+            className="bg-semantic-crit-fill text-semantic-crit border border-semantic-crit font-mono font-semibold px-4 py-2 rounded-[2px] text-xs uppercase tracking-wider hover:bg-semantic-crit hover:text-bg-surface transition-colors flex items-center gap-2"
+          >
+            <Square className="w-3.5 h-3.5" /> Stop
           </button>
         ) : (
           <button onClick={startSimulation} className="btn-primary flex items-center gap-2">
-            <Play className="w-4 h-4" /> Start Simulation
+            <Play className="w-3.5 h-3.5" /> Start Simulation
           </button>
         )}
       </div>
@@ -249,18 +276,18 @@ export default function AttackSimulator() {
         <div className="grid grid-cols-3 gap-4">
           <div className="panel p-4 text-center">
             <div className="label-text mb-2">Total Flows</div>
-            <div className="font-display text-3xl font-bold text-text-primary">{simResults.length}</div>
+            <div className="font-mono text-3xl font-semibold text-text-primary tabular-nums">{simResults.length}</div>
           </div>
           <div className="panel p-4 text-center">
             <div className="label-text mb-2">Attacks Detected</div>
-            <div className="font-display text-3xl font-bold text-accent-red">{attackCount}</div>
-            <div className="font-mono text-xs text-text-muted mt-1">
+            <div className="font-mono text-3xl font-semibold text-semantic-crit tabular-nums">{attackCount}</div>
+            <div className="font-mono text-xs text-text-muted mt-1 tabular-nums">
               {((attackCount / simResults.length) * 100).toFixed(0)}% detection rate
             </div>
           </div>
           <div className="panel p-4 text-center">
             <div className="label-text mb-2">Avg Threat Score</div>
-            <div className="font-display text-3xl font-bold" style={{ color: selectedTemplate.color }}>
+            <div className="font-mono text-3xl font-semibold tabular-nums" style={{ color: selectedTemplate.color }}>
               {avgScore.toFixed(0)}
             </div>
           </div>
@@ -281,7 +308,7 @@ export default function AttackSimulator() {
         {/* Live feed */}
         <div className="panel p-4">
           <div className="label-text mb-3 flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${isRunning ? 'bg-accent-red animate-pulse' : 'bg-text-muted'}`} />
+            <div className={`w-1.5 h-1.5 ${isRunning ? 'bg-semantic-crit' : 'bg-text-muted'}`} />
             {isRunning ? 'Live Detection Feed' : 'Detection Results'}
           </div>
           <div className="space-y-2 max-h-64 overflow-auto">
@@ -291,19 +318,19 @@ export default function AttackSimulator() {
                   key={i}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="flex items-center gap-3 py-2 px-3 rounded bg-bg-base border border-bg-border"
+                  className="flex items-center gap-3 py-2 px-3 rounded-[2px] bg-bg-base border border-border"
                 >
                   <div
-                    className="w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: ATTACK_COLORS[r.predicted_attack] || '#475569' }}
+                    className="w-1.5 h-1.5 flex-shrink-0"
+                    style={{ backgroundColor: ATTACK_COLORS[r.predicted_attack] || '#4A473F' }}
                   />
                   <span
                     className="font-mono text-xs font-semibold flex-1"
-                    style={{ color: ATTACK_COLORS[r.predicted_attack] || '#94a3b8' }}
+                    style={{ color: ATTACK_COLORS[r.predicted_attack] || '#4A473F' }}
                   >
                     {r.predicted_attack}
                   </span>
-                  <span className="font-mono text-xs text-text-muted">
+                  <span className="font-mono text-xs text-text-muted tabular-nums">
                     {r.threat_score.toFixed(0)}
                   </span>
                   <span className={`text-xs font-mono ${

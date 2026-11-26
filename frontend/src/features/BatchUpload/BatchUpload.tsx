@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useMutation } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Upload, FileText, X, Download, CheckCircle, AlertCircle } from 'lucide-react'
+import { Upload, FileText, X, Download, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 import Papa from 'papaparse'
 import { api } from '@/api/client'
 import { useSettingsStore } from '@/store/settings'
@@ -135,8 +135,8 @@ export default function BatchUpload() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">Batch Analysis</h1>
+      <div className="pb-4 border-b border-border">
+        <h1 className="font-serif text-2xl font-semibold text-text-primary tracking-tight">Batch Analysis</h1>
         <p className="font-mono text-xs text-text-muted mt-1">
           Upload a CSV file with network flow features for bulk prediction
         </p>
@@ -146,20 +146,20 @@ export default function BatchUpload() {
       <div
         {...getRootProps()}
         className={clsx(
-          "panel p-12 flex flex-col items-center justify-center cursor-pointer transition-all duration-200",
+          "panel p-12 flex flex-col items-center justify-center cursor-pointer transition-colors duration-150",
           isDragActive
-            ? "border-accent-cyan border-opacity-60 bg-accent-cyan bg-opacity-5"
-            : "hover:border-accent-cyan hover:border-opacity-30 hover:bg-bg-elevated"
+            ? "border-border-strong bg-bg-elevated"
+            : "hover:border-border-strong hover:bg-bg-elevated"
         )}
       >
         <input {...getInputProps()} />
-        <Upload className={clsx("w-10 h-10 mb-4", isDragActive ? "text-accent-cyan" : "text-text-muted")} />
+        <Upload className={clsx("w-8 h-8 mb-4", isDragActive ? "text-text-primary" : "text-text-muted")} />
         <div className="font-mono text-sm text-text-secondary text-center">
           {isDragActive ? (
-            <span className="text-accent-cyan">Drop CSV file here</span>
+            <span className="text-text-primary font-medium">Drop CSV file here</span>
           ) : (
             <>
-              <span className="text-accent-cyan">Click to browse</span> or drag & drop CSV
+              <span className="text-semantic-info underline font-medium">Click to browse</span> or drag & drop CSV
             </>
           )}
         </div>
@@ -179,10 +179,10 @@ export default function BatchUpload() {
             {/* File info */}
             <div className="panel p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-accent-cyan" />
+                <FileText className="w-5 h-5 text-semantic-info" />
                 <div>
-                  <div className="font-mono text-sm text-text-primary">{fileName}</div>
-                  <div className="font-mono text-xs text-text-muted">
+                  <div className="font-mono text-sm text-text-primary font-medium">{fileName}</div>
+                  <div className="font-mono text-xs text-text-muted tabular-nums">
                     {csvData.length} rows · {columns.length} columns
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export default function BatchUpload() {
                 >
                   {isPending ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-bg-base border-t-transparent rounded-full animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       Processing {csvData.length} rows...
                     </>
                   ) : (
@@ -217,15 +217,15 @@ export default function BatchUpload() {
             {/* CSV Preview */}
             {!results.length && (
               <div className="panel overflow-hidden">
-                <div className="px-4 py-3 border-b border-bg-border label-text">
+                <div className="px-4 py-3 border-b border-border bg-bg-elevated label-text">
                   Data Preview (first 5 rows)
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs font-mono">
                     <thead>
-                      <tr className="border-b border-bg-border">
+                      <tr className="border-b border-border-strong bg-bg-elevated">
                         {columns.slice(0, 8).map(col => (
-                          <th key={col} className="px-4 py-2 text-left text-text-muted whitespace-nowrap">
+                          <th key={col} className="px-4 py-2 text-left text-text-secondary font-semibold whitespace-nowrap">
                             {col}
                           </th>
                         ))}
@@ -236,9 +236,9 @@ export default function BatchUpload() {
                     </thead>
                     <tbody>
                       {csvData.slice(0, 5).map((row, i) => (
-                        <tr key={i} className="border-b border-bg-border border-opacity-50 hover:bg-bg-elevated">
+                        <tr key={i} className="border-b border-border hover:bg-bg-elevated transition-colors">
                           {columns.slice(0, 8).map(col => (
-                            <td key={col} className="px-4 py-2 text-text-secondary whitespace-nowrap">
+                            <td key={col} className="px-4 py-2 text-text-secondary whitespace-nowrap tabular-nums">
                               {row[col] ?? '-'}
                             </td>
                           ))}
@@ -263,12 +263,12 @@ export default function BatchUpload() {
                       <div key={attack} className="panel p-3 text-center">
                         <div
                           className="font-mono text-xs mb-1 font-semibold"
-                          style={{ color: ATTACK_COLORS[attack] || '#94a3b8' }}
+                          style={{ color: ATTACK_COLORS[attack] || '#4A473F' }}
                         >
                           {attack}
                         </div>
-                        <div className="font-display text-xl font-bold text-text-primary">{count}</div>
-                        <div className="font-mono text-xs text-text-muted">
+                        <div className="font-mono text-xl font-semibold text-text-primary tabular-nums">{count}</div>
+                        <div className="font-mono text-xs text-text-muted tabular-nums">
                           {((count / results.length) * 100).toFixed(0)}%
                         </div>
                       </div>
@@ -277,9 +277,9 @@ export default function BatchUpload() {
 
                 {/* Results table */}
                 <div className="panel overflow-hidden">
-                  <div className="px-4 py-3 border-b border-bg-border flex items-center justify-between">
+                  <div className="px-4 py-3 border-b border-border flex items-center justify-between">
                     <div className="label-text flex items-center gap-2">
-                      <CheckCircle className="w-3.5 h-3.5 text-accent-green" />
+                      <CheckCircle className="w-3.5 h-3.5 text-semantic-normal" />
                       {results.length} predictions complete
                     </div>
                     <button
@@ -291,35 +291,35 @@ export default function BatchUpload() {
                   </div>
                   <div className="overflow-auto max-h-96">
                     <table className="w-full text-xs font-mono">
-                      <thead className="sticky top-0 bg-bg-elevated">
-                        <tr className="border-b border-bg-border">
-                          <th className="px-4 py-2 text-left text-text-muted">#</th>
-                          <th className="px-4 py-2 text-left text-text-muted">Prediction</th>
-                          <th className="px-4 py-2 text-left text-text-muted">Confidence</th>
-                          <th className="px-4 py-2 text-left text-text-muted">Threat Score</th>
-                          <th className="px-4 py-2 text-left text-text-muted">Severity</th>
-                          <th className="px-4 py-2 text-left text-text-muted">Anomaly</th>
+                      <thead className="sticky top-0 bg-bg-elevated border-b border-border-strong">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-text-secondary font-semibold">#</th>
+                          <th className="px-4 py-2 text-left text-text-secondary font-semibold">Prediction</th>
+                          <th className="px-4 py-2 text-left text-text-secondary font-semibold">Confidence</th>
+                          <th className="px-4 py-2 text-left text-text-secondary font-semibold">Threat Score</th>
+                          <th className="px-4 py-2 text-left text-text-secondary font-semibold">Severity</th>
+                          <th className="px-4 py-2 text-left text-text-secondary font-semibold">Anomaly</th>
                         </tr>
                       </thead>
                       <tbody>
                         {results.map((r) => (
                           <tr
                             key={r.row}
-                            className="border-b border-bg-border border-opacity-30 hover:bg-bg-elevated"
+                            className="border-b border-border hover:bg-bg-elevated transition-colors"
                           >
-                            <td className="px-4 py-2 text-text-muted">{r.row}</td>
+                            <td className="px-4 py-2 text-text-muted tabular-nums">{r.row}</td>
                             <td className="px-4 py-2">
                               <span
                                 className="font-semibold"
-                                style={{ color: ATTACK_COLORS[r.prediction.predicted_attack] || '#94a3b8' }}
+                                style={{ color: ATTACK_COLORS[r.prediction.predicted_attack] || '#4A473F' }}
                               >
                                 {r.prediction.predicted_attack}
                               </span>
                             </td>
-                            <td className="px-4 py-2 text-text-secondary">
+                            <td className="px-4 py-2 text-text-secondary tabular-nums">
                               {(r.prediction.confidence * 100).toFixed(1)}%
                             </td>
-                            <td className="px-4 py-2 text-text-secondary">
+                            <td className="px-4 py-2 text-text-secondary tabular-nums">
                               {r.prediction.threat_score.toFixed(0)}
                             </td>
                             <td className="px-4 py-2">
@@ -334,9 +334,9 @@ export default function BatchUpload() {
                             </td>
                             <td className="px-4 py-2">
                               {r.prediction.is_anomaly ? (
-                                <AlertCircle className="w-3.5 h-3.5 text-accent-red" />
+                                <AlertCircle className="w-3.5 h-3.5 text-semantic-crit" />
                               ) : (
-                                <CheckCircle className="w-3.5 h-3.5 text-accent-green" />
+                                <CheckCircle className="w-3.5 h-3.5 text-semantic-normal" />
                               )}
                             </td>
                           </tr>

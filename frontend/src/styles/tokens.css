@@ -1,22 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Serif:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg-primary: #070b10;
-  --bg-secondary: #0d1117;
-  --bg-card: #111820;
-  --accent-green: #00ff88;
-  --accent-green-dim: #00cc6a;
-  --accent-cyan: #00d4ff;
-  --accent-amber: #ffb800;
-  --accent-red: #ff3864;
-  --accent-blue: #00b4ff;
-  --border: #1e2d3d;
-  --text-primary: #e2e8f0;
-  --text-secondary: #7d9ab5;
+  --bg-canvas: #F6F4EE;
+  --bg-primary: #F6F4EE;
+  --bg-secondary: #FAF9F5;
+  --bg-card: #FAF9F5;
+  --bg-elevated: #EFECE3;
+  --border: #D6D1C4;
+  --border-strong: #262420;
+  --grid-line: #E2DDD0;
+
+  --text-primary: #1C1B18;
+  --text-secondary: #4A473F;
+  --text-muted: #7D786D;
+
+  --accent-green: #355E3B;
+  --accent-green-dim: #2A4B2F;
+  --accent-cyan: #355670;
+  --accent-amber: #8F6522;
+  --accent-red: #99362E;
+  --accent-blue: #355670;
+  --accent-purple: #5C4F6E;
+
+  --semantic-normal-ink: #355E3B;
+  --semantic-normal-fill: #EBF2EC;
+  --semantic-normal-border: #B7CBB9;
+
+  --semantic-warn-ink: #8F6522;
+  --semantic-warn-fill: #F7F1E3;
+  --semantic-warn-border: #D9C59E;
+
+  --semantic-crit-ink: #99362E;
+  --semantic-crit-fill: #F8ECEB;
+  --semantic-crit-border: #DDB5B1;
+
+  --semantic-info-ink: #355670;
+  --semantic-info-fill: #EBF0F4;
+  --semantic-info-border: #B5C7D6;
+
+  --semantic-neutral-ink: #5C4F6E;
+  --semantic-neutral-fill: #F1EEF5;
+  --semantic-neutral-border: #C9C0D6;
 }
 
 * {
@@ -30,77 +58,99 @@ html {
 }
 
 body {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-canvas);
   color: var(--text-primary);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-secondary); }
-::-webkit-scrollbar-thumb { background: #1e2d3d; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #2a3f55; }
+::-webkit-scrollbar-track { background: #F6F4EE; }
+::-webkit-scrollbar-thumb { background: #D6D1C4; border-radius: 0px; }
+::-webkit-scrollbar-thumb:hover { background: #7D786D; }
 
 /* Selection */
-::selection { background: rgba(0,255,136,0.2); color: #00ff88; }
+::selection { background: #EFECE3; color: #1C1B18; }
 
-/* Leaflet dark theme overrides */
+/* Leaflet archival paper theme overrides */
 .leaflet-container {
-  background: #070b10 !important;
-  font-family: 'JetBrains Mono', monospace !important;
+  background: #F6F4EE !important;
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace !important;
 }
-.leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(0.7) saturate(0.5); }
-.leaflet-control-zoom a { background: #111820 !important; color: #00ff88 !important; border-color: #1e2d3d !important; }
+.leaflet-tile {
+  filter: grayscale(85%) sepia(15%) brightness(1.02) contrast(0.92);
+}
+.leaflet-control-zoom a {
+  background: #FAF9F5 !important;
+  color: #1C1B18 !important;
+  border-color: #D6D1C4 !important;
+  border-radius: 0px !important;
+}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: #FAF9F5 !important;
+  color: #1C1B18 !important;
+  border: 1px solid #262420 !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
 
 @layer components {
   .panel {
-    @apply bg-bg-card border border-border rounded-lg shadow-card;
+    @apply bg-bg-card border border-border rounded-[2px];
+  }
+  .panel-primary {
+    @apply bg-bg-card border border-border-strong rounded-[2px];
   }
   .panel-elevated {
-    @apply bg-bg-elevated border border-border-bright rounded-lg shadow-card;
+    @apply bg-bg-card border border-border-strong rounded-[2px];
   }
   .card {
-    @apply bg-bg-card border border-border rounded-lg shadow-card;
+    @apply bg-bg-card border border-border rounded-[2px];
   }
   .label-text {
-    @apply font-mono text-xs text-text-muted uppercase tracking-wider;
+    @apply font-mono text-[11px] text-text-muted uppercase tracking-widest;
   }
   .metric-value {
-    @apply font-display text-2xl font-bold text-text-primary;
+    @apply font-mono text-2xl font-semibold text-text-primary tabular-nums;
   }
   .input-field {
-    @apply bg-bg-surface border border-border rounded px-3 py-2 text-text-primary font-mono text-xs focus:outline-none focus:border-accent-green transition-colors;
+    @apply w-full bg-bg-surface border border-border rounded-[2px] px-3 py-2 text-text-primary font-mono text-xs
+           placeholder:text-text-muted focus:outline-none focus:border-border-strong transition-colors;
   }
   .badge-low {
-    @apply bg-accent-green/10 text-accent-green border border-accent-green/30 text-xs font-mono px-2 py-0.5 rounded uppercase font-semibold;
+    @apply bg-semantic-info-fill text-semantic-info border border-semantic-info-border text-[11px] font-mono px-2 py-0.5 rounded-[2px] uppercase font-medium tracking-wider;
   }
   .badge-medium {
-    @apply bg-accent-amber/10 text-accent-amber border border-accent-amber/30 text-xs font-mono px-2 py-0.5 rounded uppercase font-semibold;
+    @apply bg-semantic-warn-fill text-semantic-warn border border-semantic-warn-border text-[11px] font-mono px-2 py-0.5 rounded-[2px] uppercase font-medium tracking-wider;
   }
   .badge-high {
-    @apply bg-[#ff6b35]/15 text-[#ff6b35] border border-[#ff6b35]/30 text-xs font-mono px-2 py-0.5 rounded uppercase font-semibold;
+    @apply bg-semantic-crit-fill text-semantic-crit border border-semantic-crit-border text-[11px] font-mono px-2 py-0.5 rounded-[2px] uppercase font-semibold tracking-wider;
   }
   .badge-critical {
-    @apply bg-accent-red/20 text-accent-red border border-accent-red/40 text-xs font-mono px-2 py-0.5 rounded uppercase font-bold animate-pulse;
+    @apply bg-semantic-crit-fill text-semantic-crit border border-semantic-crit text-[11px] font-mono px-2 py-0.5 rounded-[2px] uppercase font-bold tracking-wider;
+  }
+  .badge-normal {
+    @apply bg-semantic-normal-fill text-semantic-normal border border-semantic-normal-border text-[11px] font-mono px-2 py-0.5 rounded-[2px] uppercase font-medium tracking-wider;
   }
   .btn-primary {
-    @apply bg-accent-green text-bg-primary font-mono font-bold px-4 py-2 rounded text-sm
-           hover:bg-accent-green-dim transition-colors duration-200
-           focus:outline-none focus:ring-2 focus:ring-accent-green focus:ring-offset-2 focus:ring-offset-bg-primary;
+    @apply bg-text-primary text-bg-surface border border-border-strong font-mono font-medium px-4 py-2 rounded-[2px] text-xs uppercase tracking-wider
+           hover:bg-text-secondary transition-colors duration-150
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus:outline-none focus:ring-1 focus:ring-border-strong;
   }
   .btn-ghost {
-    @apply border border-border text-text-secondary font-mono text-sm px-4 py-2 rounded
-           hover:border-border-bright hover:text-text-primary transition-colors duration-200
-           focus:outline-none focus:ring-2 focus:ring-border focus:ring-offset-2 focus:ring-offset-bg-primary;
+    @apply bg-bg-surface border border-border-strong text-text-primary font-mono text-xs uppercase tracking-wider px-4 py-2 rounded-[2px]
+           hover:bg-bg-elevated transition-colors duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed
+           focus:outline-none focus:ring-1 focus:ring-border-strong;
   }
   .label-green {
-    @apply font-mono text-xs text-accent-green uppercase tracking-widest;
+    @apply font-mono text-xs text-semantic-normal uppercase tracking-widest;
   }
   .mono {
     @apply font-mono;
   }
-  .glow-green { text-shadow: 0 0 20px rgba(0,255,136,0.6); }
-  .glow-red { text-shadow: 0 0 20px rgba(255,56,100,0.6); }
-  .glow-amber { text-shadow: 0 0 20px rgba(255,184,0,0.6); }
 }

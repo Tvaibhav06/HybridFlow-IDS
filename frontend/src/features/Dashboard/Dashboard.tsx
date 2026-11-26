@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Activity, AlertTriangle, TrendingUp, Zap, Eye, Shield } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
@@ -36,10 +37,10 @@ const StatCard = ({ icon: Icon, label, value, sub, color }: any) => (
       <div>
         <div className="label-text mb-2">{label}</div>
         <div className="metric-value">{value}</div>
-        {sub && <div className="font-mono text-xs text-text-muted mt-1">{sub}</div>}
+        {sub && <div className="font-mono text-xs text-text-muted mt-1 tabular-nums">{sub}</div>}
       </div>
-      <div className="p-2.5 rounded-lg bg-bg-base">
-        <Icon className="w-5 h-5" style={{ color }} />
+      <div className="w-8 h-8 rounded-[2px] border border-border bg-bg-base flex items-center justify-center">
+        <Icon className="w-4 h-4" style={{ color }} />
       </div>
     </div>
   </motion.div>
@@ -67,7 +68,7 @@ export default function Dashboard() {
     .map(([name, value]) => ({
       name,
       value: value as number,
-      color: ATTACK_COLORS[name] || '#475569',
+      color: ATTACK_COLORS[name] || '#7D786D',
     }))
     .sort((a, b) => b.value - a.value)
 
@@ -76,21 +77,21 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pb-4 border-b border-border">
         <div>
-          <h1 className="font-display text-2xl font-bold text-text-primary">
+          <h1 className="font-serif text-2xl font-semibold text-text-primary tracking-tight">
             Security Overview
           </h1>
           <p className="font-mono text-xs text-text-muted mt-1">
             Real-time hybrid deep learning intrusion detection monitoring
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 px-2.5 py-1 border border-border bg-bg-surface rounded-[2px]">
           <div className={clsx(
-            "w-2 h-2 rounded-full",
-            health?.status === 'ok' ? "bg-accent-green animate-pulse" : "bg-accent-red"
+            "w-1.5 h-1.5",
+            health?.status === 'ok' ? "bg-semantic-normal" : "bg-semantic-crit"
           )} />
-          <span className="font-mono text-xs text-text-muted">
+          <span className="font-mono text-xs text-text-secondary">
             {health?.status === 'ok' ? 'All systems operational' : 'Degraded mode'}
           </span>
         </div>
@@ -103,7 +104,7 @@ export default function Dashboard() {
           label="Total Analyzed"
           value={(stats?.total_requests ?? 0).toLocaleString()}
           sub="All time"
-          color="#00d4ff"
+          color="#355670"
         />
         <StatCard
           icon={AlertTriangle}
@@ -112,21 +113,21 @@ export default function Dashboard() {
           sub={`${predictions.length > 0
             ? ((attackPredictions.length / predictions.length) * 100).toFixed(1)
             : 0}% attack rate`}
-          color="#ff3b5c"
+          color="#99362E"
         />
         <StatCard
           icon={Zap}
           label="Critical Alerts"
           value={criticalCount.toLocaleString()}
           sub="Requires immediate action"
-          color="#ff3b5c"
+          color="#99362E"
         />
         <StatCard
           icon={Activity}
           label="Anomaly Rate"
           value={`${((stats?.anomaly_rate ?? 0) * 100).toFixed(1)}%`}
           sub="Autoencoder detection"
-          color="#a855f7"
+          color="#5C4F6E"
         />
       </div>
 
@@ -137,7 +138,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <div className="label-text mb-1">Traffic Timeline</div>
-              <div className="font-display text-sm font-semibold text-text-primary">
+              <div className="font-serif text-base font-semibold text-text-primary">
                 Benign vs Attack flows
               </div>
             </div>
@@ -163,18 +164,22 @@ export default function Dashboard() {
                     dataKey="value"
                   >
                     {attackDistData.map((entry, i) => (
-                      <Cell key={i} fill={entry.color} />
+                      <Cell key={i} fill={entry.color} stroke="#FAF9F5" strokeWidth={1} />
                     ))}
                   </Pie>
                   <Tooltip
                     formatter={(v: any, n: any) => [v, n]}
                     contentStyle={{
-                      background: '#0d1425',
-                      border: '1px solid #1a2540',
-                      borderRadius: 6,
-                      fontFamily: 'JetBrains Mono, monospace',
+                      background: '#FAF9F5',
+                      border: '1px solid #262420',
+                      borderRadius: 2,
+                      fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace',
                       fontSize: 11,
+                      color: '#1C1B18',
+                      boxShadow: 'none',
                     }}
+                    itemStyle={{ color: '#1C1B18' }}
+                    labelStyle={{ color: '#4A473F' }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -182,10 +187,10 @@ export default function Dashboard() {
                 {attackDistData.slice(0, 4).map((d) => (
                   <div key={d.name} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                      <div className="w-1.5 h-1.5 flex-shrink-0" style={{ backgroundColor: d.color }} />
                       <span className="font-mono text-xs text-text-secondary">{d.name}</span>
                     </div>
-                    <span className="font-mono text-xs text-text-primary">{d.value}</span>
+                    <span className="font-mono text-xs text-text-primary tabular-nums">{d.value}</span>
                   </div>
                 ))}
               </div>
@@ -200,20 +205,20 @@ export default function Dashboard() {
 
       {/* Recent predictions */}
       <div className="panel p-5">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
           <div className="label-text flex items-center gap-2">
             <Shield className="w-3.5 h-3.5" /> Recent Predictions
           </div>
-          <span className="font-mono text-xs text-text-muted">
+          <span className="font-mono text-xs text-text-muted tabular-nums">
             {recentPredictions.length} of {predictions.length}
           </span>
         </div>
         {recentPredictions.length === 0 ? (
-          <div className="text-center py-10 text-text-muted font-mono text-sm">
+          <div className="text-center py-10 text-text-muted font-mono text-xs">
             No predictions yet — go to{' '}
-            <a href="/predict" className="text-accent-cyan hover:underline">Playground</a>
+            <Link to="/predict" className="text-semantic-info underline hover:text-text-primary">Playground</Link>
             {' '}or{' '}
-            <a href="/simulator" className="text-accent-cyan hover:underline">Simulator</a>
+            <Link to="/simulator" className="text-semantic-info underline hover:text-text-primary">Simulator</Link>
           </div>
         ) : (
           <div className="space-y-2">

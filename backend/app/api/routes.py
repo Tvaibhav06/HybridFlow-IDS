@@ -122,7 +122,7 @@ def stats(db: Session = Depends(get_db)):
     )
     anom = (
         db.query(func.count(PredictionLog.id))
-        .filter(PredictionLog.anomaly_score > 0.5)
+        .filter(PredictionLog.anomaly_score > 0.4)
         .scalar()
         or 0
     )

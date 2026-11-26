@@ -13,12 +13,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
     <div className="panel-elevated px-3 py-2 text-xs font-mono space-y-1 z-50">
-      <div className="text-text-muted border-b border-bg-border pb-1 mb-1">{label}</div>
+      <div className="text-text-muted border-b border-border pb-1 mb-1">{label}</div>
       {payload.map((p: any) => (
         <div key={p.name} className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.fill || p.color }} />
+          <div className="w-1.5 h-1.5 flex-shrink-0" style={{ backgroundColor: p.fill || p.color }} />
           <span className="text-text-secondary">{p.name}:</span>
-          <span className="text-text-primary font-semibold">{p.value}</span>
+          <span className="text-text-primary font-semibold tabular-nums">{p.value}</span>
         </div>
       ))}
     </div>
@@ -36,7 +36,7 @@ export default function Analytics() {
 
   // Attack distribution bar chart data
   const attackData = Object.entries(stats?.attack_distribution || {})
-    .map(([name, value]) => ({ name, value, fill: ATTACK_COLORS[name] || '#475569' }))
+    .map(([name, value]) => ({ name, value, fill: ATTACK_COLORS[name] || '#7D786D' }))
     .sort((a, b) => b.value - a.value)
 
   // Severity pie data
@@ -44,7 +44,7 @@ export default function Analytics() {
     .map(([name, value]) => ({
       name: name.charAt(0).toUpperCase() + name.slice(1),
       value,
-      color: SEVERITY_COLORS[name as keyof typeof SEVERITY_COLORS] || '#475569',
+      color: SEVERITY_COLORS[name as keyof typeof SEVERITY_COLORS] || '#7D786D',
     }))
 
   // Confidence histogram from local predictions
@@ -90,8 +90,8 @@ export default function Analytics() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">Analytics</h1>
+      <div className="pb-4 border-b border-border">
+        <h1 className="font-serif text-2xl font-semibold text-text-primary tracking-tight">Analytics</h1>
         <p className="font-mono text-xs text-text-muted mt-1">
           Threat intelligence and detection statistics
         </p>
@@ -100,10 +100,10 @@ export default function Analytics() {
       {/* Summary row */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Total Requests', value: totalPredictions.toLocaleString(), color: '#00d4ff' },
-          { label: 'Attack Rate', value: `${attackRate}%`, color: '#ff3b5c' },
-          { label: 'Anomaly Rate', value: `${((stats?.anomaly_rate ?? 0) * 100).toFixed(1)}%`, color: '#a855f7' },
-          { label: 'Local History', value: predictions.length.toLocaleString(), color: '#00ff9f' },
+          { label: 'Total Requests', value: totalPredictions.toLocaleString(), color: '#355670' },
+          { label: 'Attack Rate', value: `${attackRate}%`, color: '#99362E' },
+          { label: 'Anomaly Rate', value: `${((stats?.anomaly_rate ?? 0) * 100).toFixed(1)}%`, color: '#5C4F6E' },
+          { label: 'Local History', value: predictions.length.toLocaleString(), color: '#355E3B' },
         ].map(({ label, value, color }, i) => (
           <motion.div
             key={label}
@@ -113,7 +113,7 @@ export default function Analytics() {
             className="panel p-4"
           >
             <div className="label-text mb-2">{label}</div>
-            <div className="font-display text-2xl font-bold" style={{ color }}>{value}</div>
+            <div className="font-mono text-2xl font-semibold tabular-nums" style={{ color }}>{value}</div>
           </motion.div>
         ))}
       </div>
@@ -125,24 +125,24 @@ export default function Analytics() {
           {attackData.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={attackData} margin={{ top: 5, right: 10, left: -20, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1a2540" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2DDD0" vertical={false} />
                 <XAxis
                   dataKey="name"
-                  tick={{ fill: '#475569', fontSize: 9, fontFamily: 'JetBrains Mono, monospace' }}
+                  tick={{ fill: '#7D786D', fontSize: 9, fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace' }}
                   angle={-35}
                   textAnchor="end"
                   tickLine={false}
-                  axisLine={false}
+                  axisLine={{ stroke: '#D6D1C4' }}
                 />
                 <YAxis
-                  tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}
+                  tick={{ fill: '#7D786D', fontSize: 10, fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace' }}
                   tickLine={false}
                   axisLine={false}
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" radius={[3, 3, 0, 0]}>
+                <Bar dataKey="value" radius={0}>
                   {attackData.map((entry, i) => (
-                    <Cell key={i} fill={entry.fill} fillOpacity={0.8} />
+                    <Cell key={i} fill={entry.fill} fillOpacity={0.85} />
                   ))}
                 </Bar>
               </BarChart>
@@ -169,17 +169,21 @@ export default function Analytics() {
                     dataKey="value"
                   >
                     {severityData.map((entry, i) => (
-                      <Cell key={i} fill={entry.color} />
+                      <Cell key={i} fill={entry.color} stroke="#FAF9F5" strokeWidth={1} />
                     ))}
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      background: '#0d1425',
-                      border: '1px solid #1a2540',
-                      borderRadius: 6,
-                      fontFamily: 'JetBrains Mono, monospace',
+                      background: '#FAF9F5',
+                      border: '1px solid #262420',
+                      borderRadius: 2,
+                      fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace',
                       fontSize: 11,
+                      color: '#1C1B18',
+                      boxShadow: 'none',
                     }}
+                    itemStyle={{ color: '#1C1B18' }}
+                    labelStyle={{ color: '#4A473F' }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -187,10 +191,10 @@ export default function Analytics() {
                 {severityData.map(d => (
                   <div key={d.name} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                      <div className="w-1.5 h-1.5 flex-shrink-0" style={{ backgroundColor: d.color }} />
                       <span className="font-mono text-xs text-text-secondary">{d.name}</span>
                     </div>
-                    <span className="font-mono text-xs text-text-primary">{d.value}</span>
+                    <span className="font-mono text-xs text-text-primary tabular-nums">{d.value}</span>
                   </div>
                 ))}
               </div>
@@ -209,22 +213,22 @@ export default function Analytics() {
           <div className="label-text mb-4">Hourly Activity Trend</div>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={hourlyData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a2540" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E2DDD0" vertical={false} />
               <XAxis
                 dataKey="time"
-                tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}
+                tick={{ fill: '#7D786D', fontSize: 10, fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace' }}
                 tickLine={false}
-                axisLine={false}
+                axisLine={{ stroke: '#D6D1C4' }}
               />
               <YAxis
-                tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}
+                tick={{ fill: '#7D786D', fontSize: 10, fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace' }}
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Line type="monotone" dataKey="total" stroke="#00d4ff" strokeWidth={1.5} dot={false} name="Total" />
-              <Line type="monotone" dataKey="attacks" stroke="#ff3b5c" strokeWidth={1.5} dot={false} name="Attacks" />
-              <Line type="monotone" dataKey="anomalies" stroke="#a855f7" strokeWidth={1.5} dot={false} name="Anomalies" />
+              <Line type="monotone" dataKey="total" stroke="#355670" strokeWidth={1.5} dot={false} name="Total" />
+              <Line type="monotone" dataKey="attacks" stroke="#99362E" strokeWidth={1.5} dot={false} name="Attacks" />
+              <Line type="monotone" dataKey="anomalies" stroke="#5C4F6E" strokeWidth={1.5} dot={false} name="Anomalies" />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -233,20 +237,20 @@ export default function Analytics() {
           <div className="label-text mb-4">Confidence Distribution</div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={confBuckets} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a2540" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E2DDD0" vertical={false} />
               <XAxis
                 dataKey="range"
-                tick={{ fill: '#475569', fontSize: 9, fontFamily: 'JetBrains Mono, monospace' }}
+                tick={{ fill: '#7D786D', fontSize: 9, fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace' }}
                 tickLine={false}
-                axisLine={false}
+                axisLine={{ stroke: '#D6D1C4' }}
               />
               <YAxis
-                tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}
+                tick={{ fill: '#7D786D', fontSize: 10, fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace' }}
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="count" fill="#00d4ff" fillOpacity={0.6} radius={[3, 3, 0, 0]} name="Predictions" />
+              <Bar dataKey="count" fill="#355670" fillOpacity={0.85} radius={0} name="Predictions" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -257,23 +261,23 @@ export default function Analytics() {
         <div className="label-text mb-4">Threat Score Distribution by Severity</div>
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={scoreBuckets} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1a2540" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#E2DDD0" vertical={false} />
             <XAxis
               dataKey="range"
-              tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}
+              tick={{ fill: '#7D786D', fontSize: 10, fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace' }}
               tickLine={false}
-              axisLine={false}
+              axisLine={{ stroke: '#D6D1C4' }}
             />
             <YAxis
-              tick={{ fill: '#475569', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}
+              tick={{ fill: '#7D786D', fontSize: 10, fontFamily: 'IBM Plex Mono, JetBrains Mono, monospace' }}
               tickLine={false}
               axisLine={false}
             />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="low" stackId="a" fill="#00ff9f" fillOpacity={0.7} name="Low" />
-            <Bar dataKey="medium" stackId="a" fill="#ffaa00" fillOpacity={0.7} name="Medium" />
-            <Bar dataKey="high" stackId="a" fill="#ff6b35" fillOpacity={0.7} name="High" />
-            <Bar dataKey="critical" stackId="a" fill="#ff3b5c" fillOpacity={0.7} name="Critical" radius={[3, 3, 0, 0]} />
+            <Bar dataKey="low" stackId="a" fill="#355670" fillOpacity={0.85} name="Low" />
+            <Bar dataKey="medium" stackId="a" fill="#8F6522" fillOpacity={0.85} name="Medium" />
+            <Bar dataKey="high" stackId="a" fill="#99362E" fillOpacity={0.65} name="High" />
+            <Bar dataKey="critical" stackId="a" fill="#99362E" fillOpacity={0.95} name="Critical" radius={0} />
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, RotateCcw, ChevronDown, ChevronUp, Upload } from 'lucide-react'
+import { Send, RotateCcw, ChevronDown, ChevronUp, Upload, Loader2 } from 'lucide-react'
 import { api } from '@/api/client'
 import { useSettingsStore } from '@/store/settings'
 import PredictionCard from '@/components/PredictionCard/PredictionCard'
@@ -45,47 +45,53 @@ type FeatureForm = z.infer<typeof featureSchema>
 const PRESETS = {
   benign: {
     label: 'Normal Traffic',
-    color: '#00ff9f',
+    color: '#355E3B',
+    fill: '#EBF2EC',
+    border: '#B7CBB9',
     features: {
-      flow_duration: 3500, flow_iat_mean: 120.3, flow_iat_std: 35.2,
-      packet_count: 42, fwd_packets: 21, bwd_packets: 21, fwd_bwd_ratio: 1.0,
-      byte_count: 6800, fwd_bytes: 3400, bwd_bytes: 3400,
-      flow_bytes_per_sec: 1942.86, flow_packets_per_sec: 12.0,
-      avg_packet_size: 162.0, fwd_packet_size_mean: 162.0, bwd_packet_size_mean: 162.0,
-      syn_flag_count: 1, ack_flag_count: 20, rst_flag_count: 0,
-      fin_flag_count: 1, psh_flag_count: 3,
-      payload_length: 3400, payload_entropy: 3.2,
-      fwd_header_length: 480, bwd_header_length: 440,
+      flow_duration: 3.0, flow_iat_mean: 3.0, flow_iat_std: 0.0,
+      packet_count: 2.0, fwd_packets: 2.0, bwd_packets: 0.0, fwd_bwd_ratio: 0.0,
+      byte_count: 12.0, fwd_bytes: 12.0, bwd_bytes: 0.0,
+      flow_bytes_per_sec: 4000000.0, flow_packets_per_sec: 666666.6667,
+      avg_packet_size: 6.0, fwd_packet_size_mean: 6.0, bwd_packet_size_mean: 0.0,
+      syn_flag_count: 0.0, ack_flag_count: 1.0, rst_flag_count: 0.0,
+      fin_flag_count: 0.0, psh_flag_count: 0.0,
+      payload_length: 12.0, payload_entropy: 0.3585,
+      fwd_header_length: 40.0, bwd_header_length: 0.0,
     },
   },
   ddos: {
     label: 'DDoS Attack',
-    color: '#ff3b5c',
+    color: '#99362E',
+    fill: '#F8ECEB',
+    border: '#DDB5B1',
     features: {
-      flow_duration: 0.001, flow_iat_mean: 0.00005, flow_iat_std: 0.00001,
-      packet_count: 51000, fwd_packets: 50000, bwd_packets: 1000, fwd_bwd_ratio: 50.0,
-      byte_count: 5000000, fwd_bytes: 4900000, bwd_bytes: 100000,
-      flow_bytes_per_sec: 5000000000, flow_packets_per_sec: 51000000,
-      avg_packet_size: 98.0, fwd_packet_size_mean: 98.0, bwd_packet_size_mean: 100.0,
-      syn_flag_count: 50000, ack_flag_count: 0, rst_flag_count: 0,
-      fin_flag_count: 0, psh_flag_count: 0,
-      payload_length: 4900000, payload_entropy: 0.1,
-      fwd_header_length: 1000000, bwd_header_length: 20000,
+      flow_duration: 1293792.0, flow_iat_mean: 143754.6667, flow_iat_std: 430865.8067,
+      packet_count: 10.0, fwd_packets: 3.0, bwd_packets: 7.0, fwd_bwd_ratio: 0.4286,
+      byte_count: 11633.0, fwd_bytes: 26.0, bwd_bytes: 11607.0,
+      flow_bytes_per_sec: 8991.3989, flow_packets_per_sec: 7.7292,
+      avg_packet_size: 1057.5454, fwd_packet_size_mean: 8.6667, bwd_packet_size_mean: 1658.1428,
+      syn_flag_count: 0.0, ack_flag_count: 0.0, rst_flag_count: 0.0,
+      fin_flag_count: 0.0, psh_flag_count: 1.0,
+      payload_length: 26.0, payload_entropy: 0.47,
+      fwd_header_length: 72.0, bwd_header_length: 152.0,
     },
   },
   scan: {
     label: 'Port Scan',
-    color: '#00d4ff',
+    color: '#355670',
+    fill: '#EBF0F4',
+    border: '#B5C7D6',
     features: {
-      flow_duration: 0.0005, flow_iat_mean: 0.0002, flow_iat_std: 0.00005,
-      packet_count: 1, fwd_packets: 1, bwd_packets: 0, fwd_bwd_ratio: 999.0,
-      byte_count: 40, fwd_bytes: 40, bwd_bytes: 0,
-      flow_bytes_per_sec: 80000, flow_packets_per_sec: 2000,
-      avg_packet_size: 40.0, fwd_packet_size_mean: 40.0, bwd_packet_size_mean: 0.0,
-      syn_flag_count: 1, ack_flag_count: 0, rst_flag_count: 1,
-      fin_flag_count: 0, psh_flag_count: 0,
-      payload_length: 0, payload_entropy: 0,
-      fwd_header_length: 20, bwd_header_length: 0,
+      flow_duration: 671.0, flow_iat_mean: 335.5, flow_iat_std: 296.2777,
+      packet_count: 3.0, fwd_packets: 2.0, bwd_packets: 1.0, fwd_bwd_ratio: 2.0,
+      byte_count: 10.0, fwd_bytes: 8.0, bwd_bytes: 2.0,
+      flow_bytes_per_sec: 14903.1297, flow_packets_per_sec: 4470.9389,
+      avg_packet_size: 3.0, fwd_packet_size_mean: 4.0, bwd_packet_size_mean: 2.0,
+      syn_flag_count: 0.0, ack_flag_count: 0.0, rst_flag_count: 0.0,
+      fin_flag_count: 0.0, psh_flag_count: 1.0,
+      payload_length: 8.0, payload_entropy: 0.3,
+      fwd_header_length: 44.0, bwd_header_length: 24.0,
     },
   },
 }
@@ -190,8 +196,8 @@ export default function PredictPlayground() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">Predict Playground</h1>
+      <div className="pb-4 border-b border-border">
+        <h1 className="font-serif text-2xl font-semibold text-text-primary tracking-tight">Predict Playground</h1>
         <p className="font-mono text-xs text-text-muted mt-1">
           Enter network flow features and get real-time threat classification
         </p>
@@ -207,10 +213,10 @@ export default function PredictPlayground() {
                 key={mode}
                 onClick={() => { setInputMode(mode); setJsonError('') }}
                 className={clsx(
-                  'flex-1 py-1.5 rounded font-mono text-xs transition-all duration-150',
+                  'flex-1 py-1.5 rounded-[2px] font-mono text-xs uppercase tracking-wider transition-colors duration-150',
                   inputMode === mode
-                    ? 'bg-accent-cyan text-bg-base font-semibold'
-                    : 'text-text-secondary hover:text-text-primary'
+                    ? 'bg-text-primary text-bg-surface font-medium'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated'
                 )}
               >
                 {mode === 'form' ? 'Form' : mode === 'json' ? 'Raw JSON' : 'Upload JSON'}
@@ -226,11 +232,11 @@ export default function PredictPlayground() {
                 <button
                   key={key}
                   onClick={() => loadPreset(key as keyof typeof PRESETS)}
-                  className="flex-1 py-2 px-3 rounded border font-mono text-xs transition-all duration-150 hover:opacity-90"
+                  className="flex-1 py-2 px-3 rounded-[2px] border font-mono text-xs font-medium transition-opacity duration-150 hover:opacity-85"
                   style={{
-                    borderColor: `${preset.color}40`,
+                    borderColor: preset.border,
                     color: preset.color,
-                    backgroundColor: `${preset.color}10`,
+                    backgroundColor: preset.fill,
                   }}
                 >
                   {preset.label}
@@ -266,9 +272,9 @@ export default function PredictPlayground() {
                           animate={{ height: 'auto', opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.2 }}
-                          className="overflow-hidden"
+                          className="overflow-hidden border-t border-border"
                         >
-                          <div className="px-4 pb-4 grid grid-cols-2 gap-3">
+                          <div className="p-4 grid grid-cols-2 gap-3">
                             {group.fields.map((field) => (
                               <div key={field}>
                                 <label className="label-text block mb-1">
@@ -279,7 +285,7 @@ export default function PredictPlayground() {
                                   type="number"
                                   step="any"
                                   placeholder="0"
-                                  className="input-field"
+                                  className="input-field tabular-nums"
                                 />
                               </div>
                             ))}
@@ -299,7 +305,7 @@ export default function PredictPlayground() {
                 >
                   {isPending ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-bg-base border-t-transparent rounded-full animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       Analyzing...
                     </>
                   ) : (
@@ -333,7 +339,7 @@ export default function PredictPlayground() {
                   spellCheck={false}
                 />
                 {jsonError && (
-                  <div className="text-accent-red font-mono text-xs mt-2">{jsonError}</div>
+                  <div className="text-semantic-crit font-mono text-xs mt-2">{jsonError}</div>
                 )}
               </div>
               <div className="flex gap-3">
@@ -344,7 +350,7 @@ export default function PredictPlayground() {
                 >
                   {isPending ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-bg-base border-t-transparent rounded-full animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       Analyzing...
                     </>
                   ) : (
@@ -370,18 +376,18 @@ export default function PredictPlayground() {
             <div className="space-y-3">
               <div
                 className="panel p-10 flex flex-col items-center justify-center cursor-pointer
-                  hover:border-accent-cyan hover:border-opacity-40 transition-all"
+                  hover:border-border-strong hover:bg-bg-elevated transition-colors"
                 onClick={() => document.getElementById('json-file-input')?.click()}
               >
                 <Upload className="w-8 h-8 text-text-muted mb-3" />
                 <div className="font-mono text-sm text-text-secondary text-center">
-                  <span className="text-accent-cyan">Click to browse</span> a JSON file
+                  <span className="text-semantic-info underline font-medium">Click to browse</span> a JSON file
                 </div>
                 <div className="font-mono text-xs text-text-muted mt-2 text-center">
                   Single flow object with any of the 24 features
                 </div>
                 <div className="font-mono text-xs text-text-muted mt-1 text-center">
-                  Example: <span className="text-accent-cyan">{"{ \"flow_duration\": 3500, ... }"}</span>
+                  Example: <span className="text-text-primary">{"{ \"flow_duration\": 3500, ... }"}</span>
                 </div>
                 <input
                   id="json-file-input"
@@ -392,11 +398,11 @@ export default function PredictPlayground() {
                 />
               </div>
               {jsonError && (
-                <div className="text-accent-red font-mono text-xs px-1">{jsonError}</div>
+                <div className="text-semantic-crit font-mono text-xs px-1">{jsonError}</div>
               )}
               {isPending && (
                 <div className="flex items-center justify-center gap-2 font-mono text-xs text-text-muted">
-                  <div className="w-4 h-4 border-2 border-accent-cyan border-t-transparent rounded-full animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-text-primary" />
                   Analyzing uploaded file...
                 </div>
               )}
@@ -422,12 +428,12 @@ export default function PredictPlayground() {
                     size="lg"
                   />
                   <div
-                    className="mt-4 font-display text-xl font-bold text-center"
-                    style={{ color: result.predicted_attack === 'BENIGN' ? '#00ff9f' : '#ff3b5c' }}
+                    className="mt-4 font-serif text-xl font-semibold text-center tracking-tight"
+                    style={{ color: result.predicted_attack === 'BENIGN' ? '#355E3B' : '#99362E' }}
                   >
                     {result.predicted_attack}
                   </div>
-                  <div className="font-mono text-xs text-text-muted mt-1">
+                  <div className="font-mono text-xs text-text-muted mt-1 tabular-nums">
                     {(result.confidence * 100).toFixed(1)}% confidence
                   </div>
                 </div>
@@ -450,8 +456,8 @@ export default function PredictPlayground() {
                 animate={{ opacity: 1 }}
                 className="panel p-12 flex flex-col items-center justify-center text-center h-64"
               >
-                <div className="w-16 h-16 rounded-full bg-bg-base flex items-center justify-center mb-4 border border-bg-border">
-                  <Send className="w-6 h-6 text-text-muted" />
+                <div className="w-12 h-12 rounded-[2px] bg-bg-base flex items-center justify-center mb-4 border border-border">
+                  <Send className="w-5 h-5 text-text-muted" />
                 </div>
                 <div className="font-mono text-sm text-text-muted">
                   Enter features and click Analyze
